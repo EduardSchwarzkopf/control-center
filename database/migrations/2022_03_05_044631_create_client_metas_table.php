@@ -15,11 +15,16 @@ return new class extends Migration
     {
         Schema::create('client_metas', function (Blueprint $table) {
             $table->id();
+            $table->timestamps();
+            
+            // Relationships
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
-            $table->string('url');
-            $table->integer('environment');
+            $table->unsignedBigInteger('client_environment_id');
+            $table->foreign('client_environment_id')->references('id')->on('client_environments');
+
+            $table->string('url')->unique();
             $table->boolean('backup_enabled');
             $table->boolean('inodes_enabled');
             $table->boolean('diskspace_enabled');
@@ -38,8 +43,6 @@ return new class extends Migration
             $table->float('diskspace_warn_level');
             $table->float('inodes_warn_level');
             $table->string('email_receiver');
-            $table->timestamps();
-
         });
     }
 
