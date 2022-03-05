@@ -17,7 +17,6 @@ return new class extends Migration
         Schema::create('client_environments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamps();
         });
 
         $seeder = new ClientEnvironmentSeeder();

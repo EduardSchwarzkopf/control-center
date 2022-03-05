@@ -15,27 +15,31 @@ return new class extends Migration
     {
         Schema::create('client_metas', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('client_id');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+
             $table->string('url');
-            $table->string('environment');
-            $table->string('backup_enabled');
-            $table->string('inodes_enabled');
-            $table->string('diskspace_enabled');
-            $table->string('email_enabled');
-            $table->string('backup_notification_enabled');
+            $table->integer('environment');
+            $table->boolean('backup_enabled');
+            $table->boolean('inodes_enabled');
+            $table->boolean('diskspace_enabled');
+            $table->boolean('email_enabled');
+            $table->boolean('backup_notification_enabled');
             $table->string('backup_notification_receiver');
-            $table->string('backup_files_enabled');
-            $table->string('backup_database_enabled');
+            $table->boolean('backup_files_enabled');
+            $table->boolean('backup_database_enabled');
             $table->string('backup_custom_folder');
-            $table->string('backup_sync_enabled');
-            $table->string('backup_sync_amount');
-            $table->string('backup_database_max_age');
-            $table->string('backup_database_amount');
-            $table->string('backup_files_max_age');
-            $table->string('backup_files_amount');
-            $table->string('diskspace_warn_level');
-            $table->string('inodes_warn_level');
+            $table->boolean('backup_sync_enabled');
+            $table->integer('backup_sync_amount');
+            $table->integer('backup_database_max_age');
+            $table->integer('backup_database_amount');
+            $table->integer('backup_files_max_age');
+            $table->integer('backup_files_amount');
+            $table->float('diskspace_warn_level');
+            $table->float('inodes_warn_level');
             $table->string('email_receiver');
             $table->timestamps();
+
         });
     }
 
