@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ClientResource;
 use App\Http\Resources\ClientRessource;
 use App\Models\Client;
 use App\Models\ClientOption;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -35,9 +37,9 @@ class ClientController extends Controller
         try {
             $optionsList = ['client_id' => $client->id] + $optionsList;
             ClientOption::create($optionsList);
-        } catch (Exception $ex) {
+        } catch (QueryException $ex) {
             $client->delete();
-            abort(422, 'Wrong Data provided');
+            abort(422, 'Error while inserting Client');
         }
 
         return ClientRessource::make($client);
@@ -51,7 +53,7 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        //
+        return new ClientResource($client);
     }
 
     /**
@@ -75,5 +77,7 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         //
+        $client->delete();
+        return response()->noContent();
     }
 }
