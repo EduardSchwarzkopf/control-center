@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('client_metas', function (Blueprint $table) {
+        Schema::create('client_options', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
-            $table->unsignedBigInteger('client_environment_id');
+            $table->unsignedBigInteger('client_environment_id')->nullable();
             $table->foreign('client_environment_id')->references('id')->on('client_environments');
 
             $table->boolean('is_active');
@@ -59,6 +59,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client_metas');
+        Schema::dropIfExists('client_options');
     }
 };
