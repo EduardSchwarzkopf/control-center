@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ClientRessource;
 use App\Models\Client;
 use App\Models\ClientOption;
+use Exception;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -27,12 +28,19 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        $client = Client::create(['name' => $request->name]);
+        $client = new Client(['name' => $request->name]);
+        $client->save();
 
-        $optionsList = ['client_id' => $client->id] + $request->options;
-        ClientOption::create($optionsList);
+        $optionsList = $request->options;
+        try {
+            $optionsList = ['client_id' => $client->id] + $optionsList;
+            ClientOption::create($optionsList);
+        } catch (Exception $ex) {
+            $client->delete();
+            abort(422, 'Wrong Data provided');
+        }
 
-        return $client;
+        return ClientRessource::make($client);
     }
 
     /**
