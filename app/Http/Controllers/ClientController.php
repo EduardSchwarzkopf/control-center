@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ClientRessource;
 use App\Models\Client;
+use App\Models\ClientOption;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -14,7 +16,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        //
+        return ClientRessource::collection(Client::all());
     }
 
     /**
@@ -25,7 +27,12 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $client = Client::create(['name' => $request->name]);
+
+        $optionsList = ['client_id' => $client->id] + $request->options;
+        ClientOption::create($optionsList);
+
+        return $client;
     }
 
     /**
