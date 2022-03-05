@@ -9,9 +9,11 @@ class Client extends Model
 {
     use HasFactory;
 
-    public function clientMeta()
+    protected $fillable = ['name'];
+
+    public function options()
     {
-        return $this->hasOne(ClientMeta::class);
+        return $this->hasOne(ClientOption::class);
     }
 
     public function testHistories()
