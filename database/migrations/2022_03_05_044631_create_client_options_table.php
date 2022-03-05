@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('test_retries');
             $table->integer('retry_interval');
 
-            $table->string('url')->unique();
+            $table->string('url');
             $table->boolean('inodes_enabled');
             $table->boolean('backup_files_enabled');
             $table->boolean('backup_database_enabled');
