@@ -9,6 +9,8 @@ class Client extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['url', 'body', 'active'];
+
     public function clientMeta()
     {
         return $this->hasOne(ClientMeta::class);
