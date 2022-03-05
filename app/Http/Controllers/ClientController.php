@@ -33,9 +33,8 @@ class ClientController extends Controller
         $client = new Client(['name' => $request->name]);
         $client->save();
 
-        $optionsList = $request->options;
         try {
-            $optionsList = ['client_id' => $client->id] + $optionsList;
+            $optionsList = ['client_id' => $client->id] + $request->options;
             ClientOption::create($optionsList);
         } catch (QueryException $ex) {
             $client->delete();
