@@ -15,4 +15,9 @@ class Client extends Model
     {
         return $this->hasOne(ClientMeta::class);
     }
+
+    public function testHistories()
+    {
+        return $this->hasMany(TestHistory::class);
+    }
 }
