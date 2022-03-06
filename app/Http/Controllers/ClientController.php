@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\ClientRessource;
 use App\Models\Client;
 use App\Models\ClientOption;
-use Exception;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
@@ -28,20 +28,24 @@ class ClientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
-        $client = new Client(['name' => $request->name]);
-        $client->save();
+        $client = Client::create($request->all());
 
         try {
             $optionsList = ['client_id' => $client->id] + $request->options;
-            ClientOption::create($optionsList);
+            $options = ClientOption::create($optionsList);
         } catch (QueryException $ex) {
             $client->delete();
-            abort(422, 'Error while inserting Client');
+            abort(422, 'Error: Could not create client.');
         }
 
-        return ClientRessource::make($client);
+        if ($options->id) {
+            // All good
+            return ClientRessource::make($client);
+        }
+
+        abort(422, 'Error: Somehting went wrong, while creating a client.');
     }
 
     /**
@@ -85,7 +89,6 @@ class ClientController extends Controller
      */
     public function destroy(Client $client)
     {
-        //
         $client->delete();
         return response()->noContent();
     }
