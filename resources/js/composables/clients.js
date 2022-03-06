@@ -20,6 +20,10 @@ export default function useClients() {
         client.value = response.data
     }
 
+    const destroyClient = async (id) => {
+        await axios.delete(`/api/clients/${id}`)
+    }
+
     const storeClient = async (data) => {
         errors.value = ''
         try {
@@ -56,6 +60,7 @@ export default function useClients() {
         getClient,
         getClients,
         storeClient,
-        updateClient
+        updateClient,
+        destroyClient
     }
 }
