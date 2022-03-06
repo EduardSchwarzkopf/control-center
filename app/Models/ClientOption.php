@@ -24,7 +24,7 @@ class ClientOption extends Model
         'backup_files_enabled',
         'backup_database_enabled',
         'backup_custom_folder',
-        'remote_backup_enabled',
+        'backup_remote_enabled',
         'remote_backup_amount',
         'backup_database_max_age',
         'backup_database_amount',
@@ -48,7 +48,7 @@ class ClientOption extends Model
         'diskspace_enabled' => false,
         'email_enabled' => false,
         'backup_notification_enabled' => false,
-        'remote_backup_enabled' => false
+        'backup_remote_enabled' => false
     ];
 
     public function client()

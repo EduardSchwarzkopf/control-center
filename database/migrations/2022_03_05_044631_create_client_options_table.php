@@ -36,7 +36,7 @@ return new class extends Migration
             $table->boolean('diskspace_enabled');
             $table->boolean('email_enabled');
             $table->boolean('backup_notification_enabled');
-            $table->boolean('remote_backup_enabled');
+            $table->boolean('backup_remote_enabled');
 
             $table->string('backup_notification_receiver')->nullable();
             $table->string('backup_custom_folder')->nullable();
