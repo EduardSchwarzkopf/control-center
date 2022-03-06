@@ -11,7 +11,6 @@ export default function useClients() {
 
     const getClients = async () => {
         let response = await axios.get('/api/clients')
-        console.log(response)
         clients.value = response.data
     }
 
