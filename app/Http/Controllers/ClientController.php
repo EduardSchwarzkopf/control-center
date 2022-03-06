@@ -81,6 +81,18 @@ class ClientController extends Controller
     }
 
     /**
+     * Search by name
+     *
+     * @param  str $name
+     * @return \Illuminate\Http\Response
+     */
+    public function search($name)
+    {
+        $clientList = Client::where('name', 'like', '%'.$name.'%')->get();
+        return ClientRessource::collection($clientList);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Client  $client
