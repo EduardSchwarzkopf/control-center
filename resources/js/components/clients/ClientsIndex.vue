@@ -1,6 +1,12 @@
 <template>
+    <div class="flex place-content-end mb-4">
+        <div class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <router-link :to="{ name: 'clients.create' }" class="text-sm font-medium">Create client</router-link>
+        </div>
+    </div>
+
     <div class="overflow-hidden overflow-x-auto min-w-full align-middle sm:rounded-md">
-        <table class="min-w-full border divide-y divide-gray-200">
+       <table class="min-w-full border divide-y divide-gray-200">
             <thead>
             <tr>
                 <th class="px-6 py-3 bg-gray-50">
