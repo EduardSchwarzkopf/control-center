@@ -19,7 +19,7 @@
                 <div class="mt-1">
                     <input type="text" name="url" id="url"
                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                           v-model="form.url">
+                           v-model="form.options.url">
                 </div>
             </div>
 
@@ -40,23 +40,16 @@ export default {
     setup() {
         const form = reactive({
             name: '',
-            url: '',
+            options: {
+                url: '',
+            },
         })
 
         const { errors, storeClient } = useClients()
 
         const saveClient = async () => {
             const formData = {...form}
-            let optionData = {...form}
-            delete optionData.name
-
-            const clientData = { 
-                'name': formData.name, 
-                'options': optionData 
-            }
-
-            console.log(clientData)
-            await storeClient(clientData)
+            await storeClient(formData)
         }
 
         return {

@@ -25065,7 +25065,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   setup: function setup() {
     var form = (0,vue__WEBPACK_IMPORTED_MODULE_2__.reactive)({
       name: '',
-      url: ''
+      options: {
+        url: ''
+      }
     });
 
     var _useClients = (0,_composables_clients__WEBPACK_IMPORTED_MODULE_1__["default"])(),
@@ -25074,23 +25076,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
     var saveClient = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
-        var formData, optionData, clientData;
+        var formData;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 formData = _objectSpread({}, form);
-                optionData = _objectSpread({}, form);
-                delete optionData.name;
-                clientData = {
-                  'name': formData.name,
-                  'options': optionData
-                };
-                console.log(clientData);
-                _context.next = 7;
-                return storeClient(clientData);
+                _context.next = 3;
+                return storeClient(formData);
 
-              case 7:
+              case 3:
               case "end":
                 return _context.stop();
             }
@@ -25261,11 +25256,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "url",
     "class": "block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50",
     "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
-      return $setup.form.url = $event;
+      return $setup.form.options.url = $event;
     })
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.form.url]])])])]), _hoisted_7], 32
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $setup.form.options.url]])])])]), _hoisted_7], 32
   /* HYDRATE_EVENTS */
   )], 64
   /* STABLE_FRAGMENT */
