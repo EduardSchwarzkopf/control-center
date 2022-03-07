@@ -56,10 +56,11 @@ export default {
         const { errors, storeClient } = useClients()
 
         let saveClient = async () => {
-            await storeClient()
+            await storeClient({ ...form })
         }
 
         if (props.id) {
+            console.log("HÖ?!")
             const { client, updateClient, getClient } = useClients()
             form = client
             onMounted(() => getClient(props.id))
