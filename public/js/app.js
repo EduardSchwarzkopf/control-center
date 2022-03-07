@@ -25102,8 +25102,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }();
 
     if (props.id) {
-      console.log("HÖ?!");
-
       var _useClients2 = (0,_composables_clients__WEBPACK_IMPORTED_MODULE_1__["default"])(),
           client = _useClients2.client,
           updateClient = _useClients2.updateClient,

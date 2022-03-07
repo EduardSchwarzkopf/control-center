@@ -60,7 +60,6 @@ export default {
         }
 
         if (props.id) {
-            console.log("HÖ?!")
             const { client, updateClient, getClient } = useClients()
             form = client
             onMounted(() => getClient(props.id))
