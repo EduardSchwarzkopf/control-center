@@ -25573,13 +25573,12 @@ function useClients() {
               });
 
             case 6:
-              _context4.next = 12;
+              _context4.next = 11;
               break;
 
             case 8:
               _context4.prev = 8;
               _context4.t0 = _context4["catch"](1);
-              console.log(_context4.t0);
 
               if (_context4.t0.response.status === 422) {
                 for (key in _context4.t0.response.data.errors) {
@@ -25587,7 +25586,7 @@ function useClients() {
                 }
               }
 
-            case 12:
+            case 11:
             case "end":
               return _context4.stop();
           }
