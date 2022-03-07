@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import CompaniesIndex from '../components/clients/ClientsIndex.vue'
-import ClientsCreate from '../components/clients/ClientsCreate.vue'
-import ClientsUpdate from '../components/clients/ClientsUpdate.vue'
+import ClientsForm from '../components/clients/ClientsForm.vue'
 
 const routes = [
     {
@@ -13,12 +12,12 @@ const routes = [
     {
         path: '/clients/create',
         name: 'clients.create',
-        component: ClientsCreate
+        component: ClientsForm
     },
     {
         path: '/clients/:id/update',
         name: 'clients.update',
-        component: ClientsUpdate,
+        component: ClientsForm,
         props: true
     },
 ];
