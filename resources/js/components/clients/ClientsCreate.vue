@@ -15,11 +15,11 @@
             </div>
 
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">URL</label>
+                <label for="url" class="block text-sm font-medium text-gray-700">URL</label>
                 <div class="mt-1">
-                    <input type="text" name="email" id="email"
+                    <input type="text" name="url" id="url"
                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                           v-model="form.email">
+                           v-model="form.url">
                 </div>
             </div>
 
@@ -46,7 +46,17 @@ export default {
         const { errors, storeClient } = useClients()
 
         const saveClient = async () => {
-            await storeClient({ ...form })
+            const formData = {...form}
+            let optionData = {...form}
+            delete optionData.name
+
+            const clientData = { 
+                'name': formData.name, 
+                'options': optionData 
+            }
+
+            console.log(clientData)
+            await storeClient(clientData)
         }
 
         return {
