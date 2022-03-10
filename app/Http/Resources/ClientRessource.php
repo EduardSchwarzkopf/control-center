@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ClientOptions;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClientRessource extends JsonResource
