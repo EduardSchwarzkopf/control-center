@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,13 +19,13 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/login', [ApiAuthController::class, 'login']);
 
-// User registration disabled
-// Route::post('/register', [ApiAuthController::class, 'register']);
 
 // Protected Routes
 Route::group(['middleware' => 'auth:sanctum'], function () {
+
     Route::post('/logout', [ApiAuthController::class, 'logout']);
 
     Route::get('/clients/search/{name}', [ClientController::class, 'search']);
     Route::apiResource('clients', ClientController::class);
+    Route::apiResource('users', UserController::class);
 });
