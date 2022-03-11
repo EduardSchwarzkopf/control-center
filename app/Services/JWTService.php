@@ -21,7 +21,6 @@ class JWTService
         string $permittedFor = "",
         string $subject = "",
         int $expiresAfter = 60,
-        array $payload = []
     ) {
         $this->issuedBy($issuer);
         $this->issuedAt();
@@ -29,7 +28,6 @@ class JWTService
         $this->subject($subject);
         $this->permittedFor($permittedFor);
         
-        $this->createToken($payload);
     }
     
     public function expiresAfter(int $seconds = 60)
@@ -84,7 +82,7 @@ class JWTService
     return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
     }   
 
-    private function createToken(array $payloadData = [])
+    public function createToken(array $payloadData = [])
     {
 
         $keyPrivatePassword = config('app.key');
@@ -158,7 +156,7 @@ class JWTService
 
         $this->token = $JWTToken;
         
-        return $this;
+        return $JWTToken;
 
     }
 
