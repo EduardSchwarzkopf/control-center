@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\ClientOption;
+use App\Services\JWTService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -41,6 +42,9 @@ class ClientCron extends Command
     public function handle()
     {
         $clientList = Client::all();
+        $jwtService = new JWTService();
+        $token = $jwtService->token;
+
 
         foreach($clientList as $client) {
             $id = $client->id;
