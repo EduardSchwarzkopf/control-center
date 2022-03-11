@@ -43,15 +43,26 @@ class ClientCron extends Command
     {
         $clientList = Client::all();
         $jwtService = new JWTService();
-        $token = $jwtService->token;
-
 
         foreach($clientList as $client) {
-            $id = $client->id;
+            $clientId = $client->id;
             $clientName = $client->name;
-            $options = ClientOption::where('client_id', "=", $id)->first();
+            $options = ClientOption::where('client_id', "=", $clientId)->first();
 
-            $infoText = "ClientCron: $clientName ($id)";
+            $isActive = $options->is_active;
+
+            if ($isActive == false) {
+                continue;
+            }
+
+            $payload = $options->toArray();
+
+            $jwtService->expiresAfter(5);
+            $token = $jwtService->createToken($payload);
+
+            // Request an den Client mit allen Daten aus dem Token
+
+            $infoText = "$token";
 
             Log::info($infoText);
             $this->info($infoText);
