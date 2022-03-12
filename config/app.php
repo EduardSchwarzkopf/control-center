@@ -56,6 +56,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'client_api_url' => env('CLIENT_API_URL', '/wrkbeat-client/api.php'),
+
     'asset_url' => env('ASSET_URL'),
 
     /*
