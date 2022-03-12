@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Client;
 use App\Models\ClientOption;
 use App\Services\JWTService;
+use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -57,12 +58,17 @@ class ClientCron extends Command
 
             $payload = $options->toArray();
 
-            $jwtService->expiresAfter(5);
+            $seconds = 30;
+            $jwtService->expiresAfter($seconds);
             $token = $jwtService->createToken($payload);
 
             // Request an den Client mit allen Daten aus dem Token
-
-            $infoText = "$token";
+            $http = new GuzzleHttpClient();
+            $res = $http->get(
+                'http://localhost/jwt-test.php',
+            ['headers' => [ 'Authorization' => 'Bearer ' . $token ]]);
+            $body = $res->getBody();
+            $infoText = "$body";
 
             Log::info($infoText);
             $this->info($infoText);
