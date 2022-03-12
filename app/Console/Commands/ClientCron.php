@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\ClientOption;
+use App\Models\Settings;
 use App\Services\JWTService;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Console\Command;
@@ -58,7 +59,8 @@ class ClientCron extends Command
 
             $payload = $options->toArray();
 
-            $apiUrl = config('app.client_api_url');
+            // Aus den Client Options holen
+            $apiUrl = $ccSettings->value;
 
             $seconds = 30;
             $jwtService->expiresAfter($seconds);
