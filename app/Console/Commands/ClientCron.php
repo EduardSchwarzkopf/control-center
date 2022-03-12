@@ -60,13 +60,16 @@ class ClientCron extends Command
 
             $seconds = 30;
             $jwtService->expiresAfter($seconds);
-            $token = $jwtService->createToken($payload);
+            $token = $jwtService->createToken();
 
             // Request an den Client mit allen Daten aus dem Token
             $http = new GuzzleHttpClient();
-            $res = $http->get(
+            $res = $http->post(
                 'http://localhost/jwt-test.php',
-            ['headers' => [ 'Authorization' => 'Bearer ' . $token ]]);
+            [
+                'headers' => [ 'Authorization' => 'Bearer ' . $token ],
+                'form_params' => $payload
+            ]);
             $body = $res->getBody();
             $infoText = "$body";
 
