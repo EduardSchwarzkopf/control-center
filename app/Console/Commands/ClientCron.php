@@ -60,7 +60,7 @@ class ClientCron extends Command
             $payload = $options->toArray();
 
             // Aus den Client Options holen
-            $apiUrl = config('client_api_url');
+            $apiUrl = config('app.client_api_url');
 
             $seconds = 30;
             $jwtService->expiresAfter($seconds);
