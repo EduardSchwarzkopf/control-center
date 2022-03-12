@@ -37,7 +37,7 @@ class ClientCron extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * debug with: php -dxdebug.mode=debug -dxdebug.start_with_request=yes artisan client:cron
      */
     public function handle()
     {
