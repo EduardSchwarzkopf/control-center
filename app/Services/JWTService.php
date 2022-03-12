@@ -30,7 +30,7 @@ class JWTService
         
     }
     
-    public function expiresAfter(int $seconds = 60)
+    public function expiresAfter(int $seconds = 60): JWTService
     {
         $this->expires = new DateTimeImmutable();
         if (!$seconds instanceof DateInterval) {
@@ -40,33 +40,33 @@ class JWTService
         return $this;
     }
 
-    private function issuedBy(string $issuer = '') {
+    private function issuedBy(string $issuer = ''): JWTService {
         $this->issuer = empty($issuer) ? config('app.url') : $issuer;
 
         return $this;
     }
 
-    public function permittedFor(string $url = '') {
+    public function permittedFor(string $url = ''):JWTService {
         $this->permittedFor = empty($url) ? config('app.url') : $url;
 
         return $this;
     }
 
-    public function subject(string $subject = '') {
+    public function subject(string $subject = ''):JWTService {
         $this->subject = empty($subject) ? config('app.name') : $subject;
 
         return $this;
 
     }
 
-    public function payload(array $payload = []) {
+    public function payload(array $payload = []):JWTService {
         $this->data = $payload;
 
         return $this;
 
     }
     
-    private function issuedAt() {
+    private function issuedAt():JWTService {
         
         $date = CarbonImmutable::now()->getTimestamp();
         $this->issuedAt = $date;
@@ -74,17 +74,19 @@ class JWTService
         return $this;
     }
 
-    public static function base64url_encode($data) {
+    public static function base64url_encode(string $data): string {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }
 
-    public static function base64url_decode($data) {
+    public static function base64url_decode(string $data):string {
     return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
     }   
 
-    public function createToken(array $payloadData = [])
+    public function createToken(array $payloadData = []):string
     {
 
+        // generate a a key pair with: 
+        // openssl genrsa -out private.key 2048 && openssl rsa -in private.key -outform PEM -pubout -out public.key
         $keyPrivatePassword = config('app.key');
         $keyPrivatePath = "storage/private.key";
         $cryptMaxCharsValue = 245;
@@ -158,54 +160,5 @@ class JWTService
         
         return $JWTToken;
 
-    }
-
-    static public function validateToken($token) 
-    {
-
-        $keyPublicPath = "cc-public.pem";
-
-        $part = explode(".",$token);
-
-        $header = $part[0];
-        $payload = $part[1];
-        $signature = $part[2];
-
-        $encodedData = $signature;
-
-        // Open public path and return this in string format
-        $fp = fopen($keyPublicPath,"r");
-        $chavePublicaString = fread($fp,8192);
-        fclose($fp);
-
-        // Open public key string and return 'resourse'
-        $resPublicKey = openssl_get_publickey($chavePublicaString);
-
-        // Decode base64 to reaveal dots (Dots are used in JWT syntaxe)
-        $encodedData = JWTService::base64url_decode($encodedData);
-
-        $rawEncodedData = $encodedData;
-
-        $partialDecodedData = '';
-        $decodedData = '';
-        $split2 = explode('.',$rawEncodedData);
-        foreach($split2 as $part2){
-            $part2 = JWTService::base64url_decode($part2);
-            
-            openssl_public_decrypt($part2, $partialDecodedData, $resPublicKey);
-            $decodedData .= $partialDecodedData;
-        }
-
-        if($header.".".$payload === $decodedData){
-            echo "VALID JWT!\n\n";
-            
-            $payload = JWTService::base64url_decode($payload);
-            $payload = json_decode($payload,true);
-            
-            echo "Payload:\n";
-            echo print_r($payload,true);
-        } else {
-            echo "INVALID JWT!";
-        }
     }
 }
