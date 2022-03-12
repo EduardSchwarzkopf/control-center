@@ -46,7 +46,7 @@ class ClientCron extends Command
         $clientList = Client::all();
         $jwtService = new JWTService();
 
-        foreach($clientList as $client) {
+        foreach ($clientList as $client) {
             $clientId = $client->id;
             $clientName = $client->name;
             $options = ClientOption::where('client_id', "=", $clientId)->first();
@@ -70,10 +70,11 @@ class ClientCron extends Command
             $http = new GuzzleHttpClient();
             $res = $http->post(
                 $options->url . $apiUrl,
-            [
-                'headers' => [ 'Authorization' => 'Bearer ' . $token ],
-                'form_params' => $payload
-            ]);
+                [
+                    'headers' => ['Authorization' => 'Bearer ' . $token],
+                    'form_params' => $payload
+                ]
+            );
             $body = $res->getBody();
             $infoText = "$body";
 
