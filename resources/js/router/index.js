@@ -1,13 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import CompaniesIndex from '../components/clients/ClientsIndex.vue'
+import ClientsIndex from '../components/clients/ClientsIndex.vue'
 import ClientsForm from '../components/clients/ClientsForm.vue'
+import UsersIndex from '../components/users/UsersIndex.vue'
+import UpdateUsersForm from '../components/users/UpdateUsersForm.vue'
+import CreateUsersForm from '../components/users/CreateUsersForm.vue'
 
 const routes = [
     {
         path: '/dashboard',
         name: 'clients.index',
-        component: CompaniesIndex
+        component: ClientsIndex
     },
     {
         path: '/clients/create',
@@ -18,6 +21,22 @@ const routes = [
         path: '/clients/:id/update',
         name: 'clients.update',
         component: ClientsForm,
+        props: true
+    },
+    {
+        path: '/users',
+        name: 'users.index',
+        component: UsersIndex
+    },
+    {
+        path: '/users/create',
+        name: 'users.create',
+        component: CreateUsersForm
+    },
+    {
+        path: '/users/:id/update',
+        name: 'users.update',
+        component: UpdateUsersForm,
         props: true
     },
 ];
