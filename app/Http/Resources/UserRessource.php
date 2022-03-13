@@ -14,6 +14,8 @@ class UserRessource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $fields = parent::toArray($request);
+        unset($fields['password']);
+        return $fields;
     }
 }
