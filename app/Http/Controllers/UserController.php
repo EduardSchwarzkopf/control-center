@@ -18,7 +18,6 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
         return UserRessource::collection(User::all());
-
     }
 
     /**
@@ -37,6 +36,10 @@ class UserController extends Controller
             'password' => [Rules\Password::defaults()],
             'is_admin' => 'required|boolean'
         ]);
+
+        if (array_key_exists('password', $fields) == false) {
+            $fields['password'] = $this->getRandomPassword();
+        }
 
         $user = User::create([
             'name' => $fields['name'],
@@ -71,13 +74,18 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
 
-        
         $fields = $request->validate([
             'name' => 'string',
-            'email' => 'email|unique:users,email,'.$user->id.',id',
+            'email' => 'email|unique:users,email,' . $user->id . ',id',
             'password' => [Rules\Password::defaults()],
             'is_admin' => 'boolean'
         ]);
+
+
+        if (array_key_exists('password', $fields)) {
+            $fields['password'] = bcrypt($fields['password']);
+        }
+
         $user->update($fields);
 
         return new UserRessource($user);
@@ -94,6 +102,10 @@ class UserController extends Controller
         $this->authorize('delete', $user);
         $user->delete();
         return response()->noContent();
+    }
 
+    private function getRandomPassword()
+    {
+        return bin2hex(openssl_random_pseudo_bytes(8));
     }
 }
