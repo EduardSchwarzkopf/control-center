@@ -82,6 +82,11 @@ class UserController extends Controller
         ]);
 
 
+        if ($user->is_admin == false && auth()->id() == $user->id) {
+            // no-admin user is not allowed to change his admin status
+            unset($fields['is_admin']);
+        }
+
         if (array_key_exists('password', $fields)) {
             $fields['password'] = bcrypt($fields['password']);
         }
