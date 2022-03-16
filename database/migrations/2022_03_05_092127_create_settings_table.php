@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('value');
         });
-        
+
         $seeder = new SettingsSeeder();
         $seeder->run();
     }
