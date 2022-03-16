@@ -17,5 +17,5 @@ class Setting extends Model
 
     ];
 
-    protected $fillable = ['name', 'label', 'value'];
+    protected $fillable = ['name', 'label', 'value', 'type'];
 }
