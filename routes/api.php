@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,4 +30,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/clients/search/{name}', [ClientController::class, 'search']);
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('users', UserController::class);
+    Route::apiResource('settings', SettingController::class);
 });
