@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Setting;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpFoundation\InputBag;
 
 class SettingsRequest extends FormRequest
 {
@@ -41,7 +42,7 @@ class SettingsRequest extends FormRequest
         return $rules;
     }
 
-    private function handleCreateSetting($request, array $rules): array
+    private function handleCreateSetting(InputBag $request, array $rules): array
     {
 
         $type = $request->get('type');
@@ -55,7 +56,7 @@ class SettingsRequest extends FormRequest
         return $rules;
     }
 
-    private function handleUpdateSetting($request, array $rules): array
+    private function handleUpdateSetting(InputBag $request, array $rules): array
     {
         $settingId = $this->route('setting.id');
         $setting = Setting::find($settingId);
