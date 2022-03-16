@@ -29,7 +29,7 @@ class StoreClientRequest extends FormRequest
         if ($this->getMethod() == 'PUT') {
             $nullableRules = ['name', 'options', 'options.url'];
 
-            foreach($nullableRules as $rule) {
+            foreach ($nullableRules as $rule) {
                 $rules[$rule][0] = 'nullable';
             }
         }
