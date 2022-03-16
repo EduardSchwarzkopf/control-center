@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SettingsRequest;
 use App\Models\Setting;
-use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
@@ -14,18 +14,19 @@ class SettingController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', Setting::class);
+        return Setting::all();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\SettingsRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SettingsRequest $request)
     {
-        //
+        return Setting::create($request->all());
     }
 
     /**
@@ -36,19 +37,21 @@ class SettingController extends Controller
      */
     public function show(Setting $setting)
     {
-        //
+        $this->authorize('view', $setting);
+        return $setting;
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\SettingsRequest  $request
      * @param  \App\Models\Setting  $setting
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Setting $setting)
+    public function update(SettingsRequest $request, Setting $setting)
     {
-        //
+        $setting->update($request->all());
+        return $setting;
     }
 
     /**
@@ -59,6 +62,8 @@ class SettingController extends Controller
      */
     public function destroy(Setting $setting)
     {
-        //
+        $this->authorize('delete', $setting);
+        $setting->delete();
+        return response()->noContent();
     }
 }
