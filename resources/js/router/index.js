@@ -5,6 +5,9 @@ import ClientsForm from '../components/clients/ClientsForm.vue'
 import UsersIndex from '../components/users/UsersIndex.vue'
 import UpdateUsersForm from '../components/users/UpdateUsersForm.vue'
 import CreateUsersForm from '../components/users/CreateUsersForm.vue'
+import SettingsIndex from '../components/settings/SettingsIndex.vue'
+import UpdateSettingsForm from '../components/settings/CreateSettingsForm.vue'
+import CreateSettingsForm from '../components/settings/UpdateSettingsForm.vue'
 
 const routes = [
     {
@@ -37,6 +40,22 @@ const routes = [
         path: '/users/:id/update',
         name: 'users.update',
         component: UpdateUsersForm,
+        props: true
+    },
+    {
+        path: '/settings',
+        name: 'settings.index',
+        component: SettingsIndex,
+    },
+    {
+        path: '/settings/create',
+        name: 'settings.create',
+        component: CreateSettingsForm
+    },
+    {
+        path: '/settings/:id/update',
+        name: 'settings.update',
+        component: UpdateSettingsForm,
         props: true
     },
 ];
