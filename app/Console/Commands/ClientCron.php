@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Client;
 use App\Services\JWTService;
 use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -73,8 +74,35 @@ class ClientCron extends Command
                     'form_params' => $payload
                 ]
             );
-            $body = $res->getBody();
-            $infoText = "$body";
+            
+            } catch (ClientException $e) {
+
+                $statusCode = $e->getCode();
+                $message = $e->getMessage();
+
+                Log::error("$now - CLIENT ERROR $statusCode: On client $clientName (id: $clientId) $apiUrl - $message");
+                
+                // Trigger Warning
+                continue;
+
+            }
+
+            // Write to History and alert if necessary
+            $statusCode = $res->getStatusCode();
+
+            $expectedStatusCode = 200;
+            $json = json_decode($res->getBody(), true);
+
+            if ($json == null || $json->is_valid == false) {
+                // Trigger Warning
+                continue;
+            }
+            
+            $infoText = "$now - $json";
+
+            if ($statusCode != $expectedStatusCode) {
+                // Trigger Warning
+                $this->error($infoText);
 
             Log::info($infoText);
             $this->info($infoText);
