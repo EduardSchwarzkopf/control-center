@@ -5,6 +5,9 @@ use Carbon\CarbonImmutable;
 use DateInterval;
 use DateTimeImmutable;
 
+// generate a a key pair with: 
+// openssl genrsa -out storage/private.key 2048 && openssl rsa -in storage/private.key -outform PEM -pubout -out storage/public.key
+
 class JWTService
 {
 
@@ -85,8 +88,6 @@ class JWTService
     public function createToken(array $payloadData = []):string
     {
 
-        // generate a a key pair with: 
-        // openssl genrsa -out private.key 2048 && openssl rsa -in private.key -outform PEM -pubout -out public.key
         $keyPrivatePassword = config('app.key');
         $keyPrivatePath = "storage/private.key";
         $cryptMaxCharsValue = 245;
