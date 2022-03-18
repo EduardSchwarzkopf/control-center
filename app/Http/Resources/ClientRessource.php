@@ -16,8 +16,6 @@ class ClientRessource extends JsonResource
     {
         $data = parent::toArray($request);
 
-        $data['options'] = $this->options;
-
         return $data;
 
     }
