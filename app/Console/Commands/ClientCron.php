@@ -48,7 +48,9 @@ class ClientCron extends Command
         foreach ($clientList as $client) {
             $clientId = $client->id;
             $clientName = $client->name;
-            $options = ClientOption::where('client_id', "=", $clientId)->first();
+            $options = $client->options;
+
+            $now = date("Y-m-d H:i:s");
 
             $isActive = $options->is_active;
 
