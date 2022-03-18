@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Client;
-use App\Models\ClientOption;
-use App\Models\Settings;
 use App\Services\JWTService;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Console\Command;
