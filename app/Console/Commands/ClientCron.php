@@ -104,8 +104,8 @@ class ClientCron extends Command
                 // Trigger Warning
                 $this->error($infoText);
 
-            Log::info($infoText);
-            $this->info($infoText);
+            } else {
+                $this->info($infoText);
         }
     }
 }
