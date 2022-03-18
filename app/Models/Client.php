@@ -44,11 +44,13 @@ class Client extends Model
     ];
 
     protected $fillable = ['name'];
+    protected $with = ['options'];
 
     public function options()
     {
         return $this->hasOne(ClientOption::class);
     }
+
 
     public function testHistories()
     {
