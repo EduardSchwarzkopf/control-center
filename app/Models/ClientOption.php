@@ -51,12 +51,18 @@ class ClientOption extends Model
         'backup_remote_enabled' => false
     ];
 
+    protected $hidden = [
+        'client_environment_id',
+    ];
+
+    protected $with = ['clientEnvironment'];
+
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
     
-    public function environment()
+    public function clientEnvironment()
     {
         return $this->belongsTo(ClientEnvironment::class);
     }
