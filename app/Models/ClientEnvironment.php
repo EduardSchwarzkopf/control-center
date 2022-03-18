@@ -9,7 +9,7 @@ class ClientEnvironment extends Model
 {
     use HasFactory;
 
-    public function client() {
-        return $this->hasMany(Client::class);
+    public function clientOptions() {
+        return $this->hasMany(ClientOption::class);
     }
 }
