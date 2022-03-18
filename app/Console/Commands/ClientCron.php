@@ -93,24 +93,24 @@ class ClientCron extends Command
                 
                 $this->TriggerWarning();
                 continue;
-
             }
 
-            $json = json_decode($res->getBody(), true);
+            $jsonResponse = json_decode($res->getBody());
+            $isValid = $jsonResponse->is_valid;
 
-            if ($json == null || $json->is_valid == false) {
+            if ($jsonResponse == null || $isValid == false) {
                 $this->TriggerWarning();
                 continue;
             }
             
-            $infoText = "$now - $json";
+            $infoText = "$now - Client: $clientName (id: $clientId)";
 
             $expectedStatusCode = 200;
             $statusCode = $res->getStatusCode();
             if ($statusCode != $expectedStatusCode) {
+
                 $this->TriggerWarning();
                 $this->error($infoText);
-
             } else {
                 $this->info($infoText);
             }
