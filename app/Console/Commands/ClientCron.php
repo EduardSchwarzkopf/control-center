@@ -69,13 +69,14 @@ class ClientCron extends Command
 
             // Request an den Client mit allen Daten aus dem Token
             $http = new GuzzleHttpClient();
-            $res = $http->post(
-                $options->url . $apiUrl,
-                [
-                    'headers' => ['Authorization' => 'Bearer ' . $token],
-                    'form_params' => $payload
-                ]
-            );
+            try{
+                $res = $http->post(
+                    $options->url . $apiUrl,
+                    [
+                        'headers' => ['Authorization' => 'Bearer ' . $token],
+                        'form_params' => $payload
+                    ]
+                );
             
             } catch (ClientException $e) {
 
@@ -108,6 +109,7 @@ class ClientCron extends Command
 
             } else {
                 $this->info($infoText);
+            }
         }
     }
 }
