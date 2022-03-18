@@ -35,6 +35,11 @@ class ClientCron extends Command
         parent::__construct();
     }
 
+    private function TriggerWarning():void {
+
+        // Add Magic here
+
+    }
     /**
      * Execute the console command.
      *
@@ -69,6 +74,7 @@ class ClientCron extends Command
 
             // Request an den Client mit allen Daten aus dem Token
             $http = new GuzzleHttpClient();
+
             try{
                 $res = $http->post(
                     $options->url . $apiUrl,
@@ -85,26 +91,24 @@ class ClientCron extends Command
 
                 Log::error("$now - CLIENT ERROR $statusCode: On client $clientName (id: $clientId) $apiUrl - $message");
                 
-                // Trigger Warning
+                $this->TriggerWarning();
                 continue;
 
             }
 
-            // Write to History and alert if necessary
-            $statusCode = $res->getStatusCode();
-
-            $expectedStatusCode = 200;
             $json = json_decode($res->getBody(), true);
 
             if ($json == null || $json->is_valid == false) {
-                // Trigger Warning
+                $this->TriggerWarning();
                 continue;
             }
             
             $infoText = "$now - $json";
 
+            $expectedStatusCode = 200;
+            $statusCode = $res->getStatusCode();
             if ($statusCode != $expectedStatusCode) {
-                // Trigger Warning
+                $this->TriggerWarning();
                 $this->error($infoText);
 
             } else {
