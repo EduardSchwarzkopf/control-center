@@ -17,7 +17,7 @@ abstract class BasePlatform
         return dirname(dirname(dirname(__FILE__)));
     }
 
-    public function SQLDump(string $folder): bool
+    public function CreateSQLDump(string $folder): bool
     {
         $host = $this->_host;
         $database = $this->_database;
