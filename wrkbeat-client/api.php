@@ -1,6 +1,5 @@
 <?php
 define('__ROOT__', dirname(__FILE__));
-$root = __ROOT__;
 require_once(__ROOT__ . '/JWT.php');
 
 $token = JWT::getBearerToken();
