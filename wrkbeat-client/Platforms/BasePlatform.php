@@ -9,10 +9,8 @@ abstract class BasePlatform
     private string $_username = '';
     private string $_password = '';
 
-    // DatabaseConnection
     // Database Backup
     // Database Backup Check
-    // E-Mail Check
 
     protected function GetPlatformRootPath(): string
     {
@@ -37,5 +35,22 @@ abstract class BasePlatform
 
         $result = file_exists($dumpfile);
         return $result;
+    }
+
+    public function CheckDatabaseConnection(): bool
+    {
+        try {
+
+            $conn = new mysqli($this->_host, $this->_username, $this->_password, $this->_database);
+
+            if ($conn->connect_error || $conn->error) {
+                $result =  false;
+            }
+
+            $conn->close();
+            return $result;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
