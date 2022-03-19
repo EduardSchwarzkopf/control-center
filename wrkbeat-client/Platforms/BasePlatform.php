@@ -14,6 +14,11 @@ abstract class BasePlatform
     // Database Backup Check
     // E-Mail Check
 
+    protected function GetPlatformRootPath(): string
+    {
+        return dirname(dirname(dirname(__FILE__)));
+    }
+
     public function SQLDump(string $folder): bool
     {
         $host = $this->_host;
