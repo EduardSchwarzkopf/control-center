@@ -7,10 +7,10 @@ require('./AddToLogFile.php');
 
 $configs = include('wrkbeat-config.php');
 
-define("ENVIRONMENT", $configs["environment"]);   
+define("ENVIRONMENT", $configs["environment"]);
 define("TIMETOLERANCE", $configs["timeTolerance"]);
-define("WARNINGLEVEL", $configs["warningLevel"]);   
-define("SHOWOUTPUT", $configs["showDetailedOutput"]);  
+define("WARNINGLEVEL", $configs["warningLevel"]);
+define("SHOWOUTPUT", $configs["showDetailedOutput"]);
 define("MAILRECEIVER", $configs["testmailReceiver"]);
 define("DOMAIN", require('./BaseDomain.php'));
 $RESPONSECODE = $configs["responseCode"];
@@ -19,15 +19,9 @@ $checkInodesUsage = $configs["checkInodes"];
 
 define("VERSION", "10.1");
 
-/* Calls */
-if (SHOWOUTPUT) {
-    CreateHeadline("Environment");
-}
-
 $checkResults = [];
 
 if (ENVIRONMENT !== 0) {
-    CreateHeadline("SQL Backup");
     $backupfolder = $configs["backupFolder"] ? $configs["backupFolder"] : "./backups";
     $sqlFiles = "$backupfolder/*.sql.gz";
     $checkResults[] = BackupCheck($sqlFiles);
@@ -35,7 +29,7 @@ if (ENVIRONMENT !== 0) {
 
     $modDate = GetRecentFileModificationDate($sqlFiles);
     if (GetAgeHours($modDate) >= 24) {
-        $backupPath = dirname( __FILE__ ) . "/backup.php";
+        $backupPath = dirname(__FILE__) . "/backup.php";
         $phpPath = $configs["phpPath"] ? $configs["phpPath"] : "php";
         exec("$phpPath $backupPath '" . DOMAIN . "' >/dev/null 2>&1 &");
     }
@@ -52,13 +46,12 @@ if (ENVIRONMENT !== 0) {
             $indexLogs = indexLogsCheck();
 
             CreateHeadline("Files Backup");
-            $backupfolder = dirname( dirname(__FILE__) ) . "/var/backups";
-            $checkResults[] = BackupCheck( dirname( dirname(__FILE__) ) . "/var/backups/*_filesystem_code.tgz");
-
+            $backupfolder = dirname(dirname(__FILE__)) . "/var/backups";
+            $checkResults[] = BackupCheck(dirname(dirname(__FILE__)) . "/var/backups/*_filesystem_code.tgz");
         } elseif (ENVIRONMENT == 1 && $sqlConnection) {
             CreateHeadline("Wordpress Backup");
             if (defined("WPBACKUPHASH")) {
-                $wpBackupFilePath = dirname( dirname(__FILE__) ) . "/wp-content/uploads/backwpup-" . WPBACKUPHASH . "-backups/*.tar.gz";
+                $wpBackupFilePath = dirname(dirname(__FILE__)) . "/wp-content/uploads/backwpup-" . WPBACKUPHASH . "-backups/*.tar.gz";
                 $checkResults[] = BackupCheck($wpBackupFilePath);
             } else {
                 AddToOutput("BackWPup Plugin not found", SHOWOUTPUT);
@@ -68,24 +61,16 @@ if (ENVIRONMENT !== 0) {
 }
 
 if ($checkDiskUsage) {
-    CreateHeadline("Disk Usage");
     $checkResults[] = diskUsage();
 }
 
 if ($checkInodesUsage) {
-    CreateHeadline("Inodes Usage");
     $checkResults[] = InodesCheck();
 }
 
-CreateHeadline("E-Mail Check");
 $checkResults[] = CheckSendingMail();
 
 
-//Set Response Code
-if (in_array(false, $checkResults) && !$backupProcess) {
-    http_response_code($RESPONSECODE);
-} else {
-    http_response_code(200);
 }
 
 //Add Response Code to Oupput:
@@ -114,11 +99,12 @@ function AddToOutput($Output, $showOutput, $breakType = "br")
     }
 }
 
-function InodesCheck() {
+function InodesCheck()
+{
     $usage = GetUsage("inodes");
     $result = true;
     $status = "OK";
-    
+
     if ($usage > WARNINGLEVEL) {
         AddToOutput("Inodes Usage: " . $usage . "%", true);
         $status = "WARN!";
@@ -131,44 +117,28 @@ function InodesCheck() {
     return $result;
 }
 
-function GetUsage($exec="disk") {
-    // Inodes String aus Shell erhalten
-
-    if ($exec=="disk") {
-       $output = exec('df -h ./'); 
-    } elseif ($exec == "inodes") {
-        $output = exec('df -i /');
-    }
-    // Position von prozentuallem Verbrauch erhalten
-    $pos = strpos($output, "%");
-    // 3 Schritte zurück gehen, um Gesamtverbrauch zu erhalten
-    $usage = substr($output, $pos -2, 2);
-
-    return $usage;
-}
 
 function CheckSendingMail()
 {
     $timestamp = "mail.timestamp";
 
-    if(file_exists($timestamp)) {
+    if (file_exists($timestamp)) {
         $to = MAILRECEIVER;
         $subject = "PHP MAILCHECK";
         $txt = date("Y-m-d H:i");
         $headers = "From: monitoring@" . DOMAIN;
-        
+
         $modificationDate = GetModificationDate($timestamp);
         $modificationCheck = CheckModifactionDate($modificationDate, 1);
 
         if ($modificationCheck == false) {
-            $out = mail($to,$subject,$txt,$headers);
-
+            $out = mail($to, $subject, $txt, $headers);
         } else {
             AddToOutput("Email Status: SKIPPED", true);
             return true;
         }
 
-        if($out == false){
+        if ($out == false) {
             AddToOutput("Email Status: WARN", true);
             return false;
         }
@@ -176,7 +146,6 @@ function CheckSendingMail()
 
         touch($timestamp);
         return true;
-
     } else {
 
         AddToOutput("Init email check", true);
@@ -184,7 +153,6 @@ function CheckSendingMail()
         touch($timestamp, $time);
         return true;
     }
-
 }
 
 function SQLConnectionCheck()
@@ -192,13 +160,13 @@ function SQLConnectionCheck()
 
     if (defined('ENVIRONMENT')) {
 
-         try {
+        try {
             [$host, $database, $username, $password] = GetDatabaseCredentials(ENVIRONMENT);
 
             $conn = new mysqli($host, $username, $password, $database);
 
             if ($conn->error) {
-                AddToOutput("SQL Error: ". $conn->error, true);
+                AddToOutput("SQL Error: " . $conn->error, true);
             }
 
             if ($conn->connect_error) {
@@ -222,26 +190,20 @@ function SQLConnectionCheck()
             }
             $conn->close();
             return true;
- 
-         } catch (Exception $e) {
-             AddToOutput("Exception catched: " . $e->getMessage(), true);
-         }
-   }
+        } catch (Exception $e) {
+            AddToOutput("Exception catched: " . $e->getMessage(), true);
+        }
+    }
 
     AddToOutput("No Environment defined", true);
     return false;
 }
 
-function GetRecentFileModificationDate($pathToFiles) {
-    $files = glob($pathToFiles);
-    $backupFile = GetRecentFile($files);
-    return GetModificationDate($backupFile);
-}
 
 //Last Backup Check
 function BackupCheck($pathToFiles)
 {
-    
+
     $modificationDateFile = GetRecentFileModificationDate($pathToFiles);
     $modificationCheck = CheckModifactionDate($modificationDateFile);
 
@@ -254,77 +216,24 @@ function BackupCheck($pathToFiles)
     };
 }
 
-function GetRecentFile($files)
-{
-    $files = array_combine($files, array_map('filemtime', $files));
-    arsort($files);
-    return key($files);
-}
 
+// function diskUsage()
+// {
 
-// Magento IndexLogs
-function IndexLogsCheck()
-{
-    $files = dirname( dirname(__FILE__) ) . "/indexlogs/log.txt";
-    $modificationDateFile = GetRecentFileModificationDate($files);
-    $modificationCheck = CheckModifactionDate($modificationDateFile);
+//     // Disk Usage mit folgendem Befehl ermitteln:
+//     $diskUsage = GetUsage();
+//     $result = true;
+//     $status = "OK";
 
-    if (!$modificationCheck) {
-        AddToOutput("IndexLog status: WARN", true);
-        return false;
-    } else {
-        AddToOutput("IndexLog status: OK", true);
-        return true;
-    };
-}
+//     if ($diskUsage > WARNINGLEVEL) {
+//         AddToOutput("Disk Usage: " . $diskUsage . "%", true);
+//         $status = "WARN!";
+//         $result = false;
+//     }
 
-function GetAgeHours($date) {
-    $dateNow = date("Y-m-d H:i");
-    $seconds = strtotime($dateNow) - strtotime($date);
-    return $seconds / 60 /  60;
-}
+//     AddToOutput("Disk Status: $status", true);
+//     AddToOutput("Disk Usage: $diskUsage%", true);
+//     AddToOutput("Warning at: " . WARNINGLEVEL . "%", true);
 
-
-function CheckModifactionDate($mdate, $hoursTolerance = TIMETOLERANCE)
-{
-    $hours = GetAgeHours($mdate);
-
-    if ($hours <= $hoursTolerance) {
-        return true;
-    } else {
-            AddToOutput("File age: " . strval(round($hours)) . " hours", SHOWOUTPUT);
-        return false;
-    }
-}
-
-function GetModificationDate($file)
-{
-    return date("Y-m-d H:i", filemtime($file));
-}
-
-
-function diskUsage()
-{
-
-    // Disk Usage mit folgendem Befehl ermitteln:
-    $diskUsage = GetUsage();
-    $result = true;
-    $status = "OK";
-
-    if ($diskUsage > WARNINGLEVEL) {
-        AddToOutput("Disk Usage: " . $diskUsage . "%", true);
-        $status = "WARN!";
-        $result = false;
-    }
-
-    AddToOutput("Disk Status: $status", true);
-    AddToOutput("Disk Usage: $diskUsage%", true);
-    AddToOutput("Warning at: " . WARNINGLEVEL . "%", true);
-
-    return $result;
-}
-
-function CreateHeadline($title)
-{
-    AddToOutput("<br>******** " . $title . " ********", true, "p");
-}
+//     return $result;
+// }
