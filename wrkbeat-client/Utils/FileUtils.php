@@ -18,6 +18,18 @@ class FileUtils
         return $files;
     }
 
+
+    //Last Backup Check
+    public static function BackupCheck(string $pathToFiles): bool
+    {
+
+        $modificationDateFile = self::GetRecentFileModificationDate($pathToFiles);
+        $modificationCheck = self::CheckModifactionDate($modificationDateFile);
+
+        return $modificationCheck;
+    }
+
+
     public static function GetRecentFile(array $files)
     {
         $files = array_combine($files, array_map('filemtime', $files));
