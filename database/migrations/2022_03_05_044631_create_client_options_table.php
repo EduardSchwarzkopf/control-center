@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('client_options', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            
+
             // Relationships
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
@@ -46,8 +46,8 @@ return new class extends Migration
             $table->integer('backup_files_max_age')->nullable();
             $table->integer('backup_files_amount')->nullable();
 
-            $table->float('diskspace_warn_level')->nullable();
-            $table->float('inodes_warn_level')->nullable();
+            $table->float('diskspace_threshold')->nullable();
+            $table->float('indoes_threshold')->nullable();
             $table->string('email_receiver')->nullable();
         });
     }

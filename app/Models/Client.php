@@ -11,13 +11,13 @@ class Client extends Model
 
     public const VALIDATION_RULES = [
         'name' => ['required', 'string'],
+        'is_active' => ['nullable', 'boolean'],
 
         'options' => ['required', 'array'],
 
-        'options.url' => ['required', 'url'],
+        'url' => ['required', 'url'],
 
         'options.client_environment_id' => ['nullable', 'integer'],
-        'options.is_active' => ['nullable', 'boolean'],
         'options.check_interval' => ['nullable', 'integer'],
         'options.test_retries' => ['nullable', 'integer'],
         'options.retry_interval' => ['nullable', 'integer'],
@@ -38,13 +38,24 @@ class Client extends Model
         'options.backup_files_max_age' => ['nullable', 'integer'],
         'options.backup_files_amount' => ['nullable', 'integer'],
 
-        'options.diskspace_warn_level' => ['nullable', 'integer'],
-        'options.inodes_warn_level' => ['nullable', 'integer'],
+        'options.diskspace_threshold' => ['nullable', 'integer'],
+        'options.indoes_threshold' => ['nullable', 'integer'],
         'options.email_receiver' => ['nullable', 'email'],
     ];
 
     protected $fillable = ['name'];
     protected $with = ['options'];
+
+    protected $attributes = [
+        'is_active' => true,
+        'inodes_enabled' => false,
+        'backup_files_enabled' => false,
+        'backup_database_enabled' => false,
+        'diskspace_enabled' => false,
+        'email_enabled' => false,
+        'backup_notification_enabled' => false,
+        'backup_remote_enabled' => false
+    ];
 
     public function options()
     {
