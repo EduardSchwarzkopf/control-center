@@ -87,59 +87,7 @@ echo $statusOutput;
 AddtoLogFile($statusOutput, "monitor");
 
 
-function CheckSendingMail()
-{
-    $timestamp = "mail.timestamp";
 
-    if (file_exists($timestamp)) {
-        $to = MAILRECEIVER;
-        $subject = "PHP MAILCHECK";
-        $txt = date("Y-m-d H:i");
-        $headers = "From: monitoring@" . DOMAIN;
-
-        $modificationDate = GetModificationDate($timestamp);
-        $modificationCheck = CheckModifactionDate($modificationDate, 1);
-
-        if ($modificationCheck == false) {
-            $out = mail($to, $subject, $txt, $headers);
-        } else {
-            AddToOutput("Email Status: SKIPPED", true);
-            return true;
-        }
-
-        if ($out == false) {
-            AddToOutput("Email Status: WARN", true);
-            return false;
-        }
-        AddToOutput("Email Status: OK", true);
-
-        touch($timestamp);
-        return true;
-    } else {
-
-        AddToOutput("Init email check", true);
-        $time = time() - 3600;
-        touch($timestamp, $time);
-        return true;
-    }
-}
-
-
-//Last Backup Check
-function BackupCheck($pathToFiles)
-{
-
-    $modificationDateFile = GetRecentFileModificationDate($pathToFiles);
-    $modificationCheck = CheckModifactionDate($modificationDateFile);
-
-    if (!$modificationCheck) {
-        AddToOutput("Backup status: WARN", true);
-        return false;
-    } else {
-        AddToOutput("Backup status: OK", true);
-        return true;
-    };
-}
 
 
 // function diskUsage()
