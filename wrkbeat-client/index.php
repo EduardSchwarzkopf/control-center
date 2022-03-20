@@ -86,37 +86,6 @@ echo $statusOutput;
 
 AddtoLogFile($statusOutput, "monitor");
 
-/* FUNCTIONS */
-function AddToOutput($Output, $showOutput, $breakType = "br")
-{
-    if ($showOutput) {
-        global $statusOutput;
-        if ($breakType == "br") {
-            $statusOutput .= $Output . "<$breakType>";
-        } else {
-            $statusOutput .= "<$breakType>" . $Output . "</$breakType>";
-        }
-    }
-}
-
-function InodesCheck()
-{
-    $usage = GetUsage("inodes");
-    $result = true;
-    $status = "OK";
-
-    if ($usage > WARNINGLEVEL) {
-        AddToOutput("Inodes Usage: " . $usage . "%", true);
-        $status = "WARN!";
-        $result = false;
-    }
-
-    AddToOutput("Inodes Status: $status", true);
-    AddToOutput("Warning at: " . WARNINGLEVEL . "%", true);
-
-    return $result;
-}
-
 
 function CheckSendingMail()
 {
@@ -153,50 +122,6 @@ function CheckSendingMail()
         touch($timestamp, $time);
         return true;
     }
-}
-
-function SQLConnectionCheck()
-{
-
-    if (defined('ENVIRONMENT')) {
-
-        try {
-            [$host, $database, $username, $password] = GetDatabaseCredentials(ENVIRONMENT);
-
-            $conn = new mysqli($host, $username, $password, $database);
-
-            if ($conn->error) {
-                AddToOutput("SQL Error: " . $conn->error, true);
-            }
-
-            if ($conn->connect_error) {
-                $errorMsg = "Connection failed: " . $conn->connect_error;
-                AddToOutput($errorMsg, true);
-                return false;
-            } else {
-                AddToOutput("Connection Status: OK", true);
-            }
-
-            if (ENVIRONMENT == 1) {
-                require('../wp-config.php');
-                $wpOptions = $table_prefix . "options";
-                AddToOutput($result, SHOWOUTPUT);
-                $sql = 'SELECT option_value FROM ' . $wpOptions . ' WHERE option_name = "backwpup_cfg_hash";';
-                $result = $conn->query($sql);
-                if ($result) {
-                    $resultRows = $result->fetch_row();
-                    define("WPBACKUPHASH", $resultRows[0]);
-                }
-            }
-            $conn->close();
-            return true;
-        } catch (Exception $e) {
-            AddToOutput("Exception catched: " . $e->getMessage(), true);
-        }
-    }
-
-    AddToOutput("No Environment defined", true);
-    return false;
 }
 
 
