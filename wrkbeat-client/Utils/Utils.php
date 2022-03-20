@@ -17,6 +17,39 @@ class Utils
         return bin2hex(random_bytes(($length - ($length % 2)) / 2));
     }
 
+    public static function CheckSendingMail(string $emailTo): bool
+    {
+        $timestamp = "mail.timestamp";
+
+        if (file_exists($timestamp)) {
+            $to = $emailTo;
+            $subject = "Control-Center PHP Mailtest";
+            $txt = date("Y-m-d H:i");
+            $headers = "From: monitoring@" . self::GetDomain();
+
+            $modificationDate = FileUtils::GetModificationDate($timestamp);
+            $modificationCheck = FileUtils::CheckModifactionDate($modificationDate, 1);
+
+            if ($modificationCheck == false) {
+                $out = mail($to, $subject, $txt, $headers);
+            } else {
+                return true;
+            }
+
+            if ($out == false) {
+                return false;
+            }
+
+            touch($timestamp);
+            return true;
+        }
+
+        $time = time() - 3600;
+        touch($timestamp, $time);
+        self::CheckSendingMail($emailTo);
+        return true;
+    }
+
     public static function GetDiskUsage(): string
     {
         return self::GetUsage();
