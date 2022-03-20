@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Services\JWTService;
+use Exception;
 use GuzzleHttp\Client as GuzzleHttpClient;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -58,13 +58,13 @@ class ClientCron extends Command
 
             $now = date("Y-m-d H:i:s");
 
-            $isActive = $options->is_active;
+            $isActive = $client->is_active;
 
             if ($isActive == false) {
                 continue;
             }
 
-            $payload = $options->toArray();
+            $payload = $options ? $options->toArray() : [];
 
             // Aus den Client Options holen
             $apiUrl = config('app.client_api_url');
@@ -78,13 +78,13 @@ class ClientCron extends Command
 
             try {
                 $res = $http->post(
-                    $options->url . $apiUrl,
+                    $client->url . $apiUrl,
                     [
                         'headers' => ['Authorization' => 'Bearer ' . $token],
                         'form_params' => $payload
                     ]
                 );
-            } catch (ClientException $e) {
+            } catch (Exception $e) {
 
                 $statusCode = $e->getCode();
                 $message = $e->getMessage();
