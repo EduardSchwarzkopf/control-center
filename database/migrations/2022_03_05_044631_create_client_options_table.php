@@ -21,15 +21,10 @@ return new class extends Migration
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
-            $table->unsignedBigInteger('client_environment_id')->nullable();
-            $table->foreign('client_environment_id')->references('id')->on('client_environments');
-
-            $table->boolean('is_active');
             $table->integer('check_interval');
             $table->integer('test_retries');
             $table->integer('retry_interval');
 
-            $table->string('url');
             $table->boolean('inodes_enabled');
             $table->boolean('backup_files_enabled');
             $table->boolean('backup_database_enabled');

@@ -11,13 +11,12 @@ class Client extends Model
 
     public const VALIDATION_RULES = [
         'name' => ['required', 'string'],
-        'is_active' => ['nullable', 'boolean'],
-
-        'options' => ['required', 'array'],
-
         'url' => ['required', 'url'],
+        'is_active' => ['nullable', 'boolean'],
+        'client_environment_id' => ['required', 'integer'],
 
-        'options.client_environment_id' => ['nullable', 'integer'],
+        'options' => ['nullable', 'array'],
+
         'options.check_interval' => ['nullable', 'integer'],
         'options.test_retries' => ['nullable', 'integer'],
         'options.retry_interval' => ['nullable', 'integer'],
@@ -39,22 +38,15 @@ class Client extends Model
         'options.backup_files_amount' => ['nullable', 'integer'],
 
         'options.diskspace_threshold' => ['nullable', 'integer'],
-        'options.indoes_threshold' => ['nullable', 'integer'],
+        'options.inodes_threshold' => ['nullable', 'integer'],
         'options.email_receiver' => ['nullable', 'email'],
     ];
 
-    protected $fillable = ['name'];
-    protected $with = ['options'];
+    protected $fillable = ['name', 'url', 'is_active', 'client_environment_id'];
+    protected $with = ['options', 'clientEnvironment'];
 
     protected $attributes = [
         'is_active' => true,
-        'inodes_enabled' => false,
-        'backup_files_enabled' => false,
-        'backup_database_enabled' => false,
-        'diskspace_enabled' => false,
-        'email_enabled' => false,
-        'backup_notification_enabled' => false,
-        'backup_remote_enabled' => false
     ];
 
     public function options()
@@ -66,5 +58,10 @@ class Client extends Model
     public function testHistories()
     {
         return $this->hasMany(TestHistory::class);
+    }
+
+    public function clientEnvironment()
+    {
+        return $this->belongsTo(ClientEnvironment::class);
     }
 }

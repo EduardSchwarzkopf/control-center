@@ -11,11 +11,9 @@ class ClientOption extends Model
 
     protected $fillable = [
         'client_id',
-        'is_active',
         'check_interval',
         'test_retries',
         'retry_interval',
-        'url',
         'inodes_enabled',
         'diskspace_enabled',
         'email_enabled',
@@ -39,13 +37,16 @@ class ClientOption extends Model
         'check_interval' => 900,
         'test_retries' => 0,
         'retry_interval' => 900,
-        'client_environment_id' => 1,
 
+        'inodes_enabled' => false,
+        'backup_files_enabled' => false,
+        'backup_database_enabled' => false,
+        'diskspace_enabled' => false,
+        'email_enabled' => false,
+        'backup_notification_enabled' => false,
+        'backup_remote_enabled' => false
     ];
 
-    protected $hidden = [
-        'client_environment_id',
-    ];
 
     public function getClientPayload(): array
     {
@@ -70,15 +71,9 @@ class ClientOption extends Model
         return $requestData;
     }
 
-    protected $with = ['clientEnvironment'];
 
     public function client()
     {
         return $this->belongsTo(Client::class);
-    }
-
-    public function clientEnvironment()
-    {
-        return $this->belongsTo(ClientEnvironment::class);
     }
 }

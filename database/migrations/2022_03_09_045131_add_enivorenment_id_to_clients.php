@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\UsersSeeder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,13 +14,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('clients', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->boolean('is_active');
-            $table->string('url');
-
-            $table->timestamps();
+        Schema::table('clients', function (Blueprint $table) {
+            $table->unsignedBigInteger('client_environment_id');
+            $table->foreign('client_environment_id')->references('id')->on('client_environments');
         });
     }
 
@@ -30,6 +27,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('clients');
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropColumn('is_admin');
+        });
     }
 };

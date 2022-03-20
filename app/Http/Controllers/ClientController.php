@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClientRequest;
-use App\Http\Resources\ClientResource;
 use App\Http\Resources\ClientRessource;
 use App\Models\Client;
 use App\Models\ClientOption;
@@ -31,20 +30,17 @@ class ClientController extends Controller
     {
         $client = Client::create($request->all());
 
-        try {
-            $optionsList = ['client_id' => $client->id] + $request->options;
-            $options = ClientOption::create($optionsList);
-        } catch (QueryException $ex) {
-            $client->delete();
-            abort(422, 'Error: Could not create client.');
+        if ($request->options) {
+
+            try {
+                $optionsList = ['client_id' => $client->id] + $request->options;
+                ClientOption::create($optionsList);
+            } catch (QueryException $ex) {
+                abort(422, 'Error: Could not create client.');
+            }
         }
 
-        if ($options->id) {
-            // All good
-            return ClientRessource::make($client);
-        }
-
-        abort(422, 'Error: Somehting went wrong, while creating a client.');
+        return ClientRessource::make($client);
     }
 
     /**
@@ -73,7 +69,7 @@ class ClientController extends Controller
         $optionList = $request->options;
 
         if ($optionList) {
-            $options = ClientOption::where('client_id',"=", $client->id)->first();
+            $options = ClientOption::where('client_id', "=", $client->id)->first();
             $options->update($optionList);
         }
 
@@ -88,7 +84,7 @@ class ClientController extends Controller
      */
     public function search($name)
     {
-        $clientList = Client::where('name', 'like', '%'.$name.'%')->get();
+        $clientList = Client::where('name', 'like', '%' . $name . '%')->get();
         return ClientRessource::collection($clientList);
     }
 
