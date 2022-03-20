@@ -18,18 +18,6 @@ class FileUtils
         return $files;
     }
 
-
-    //Last Backup Check
-    public static function BackupCheck(string $pathToFiles): bool
-    {
-
-        $modificationDateFile = self::GetRecentFileModificationDate($pathToFiles);
-        $modificationCheck = self::CheckModifactionDate($modificationDateFile);
-
-        return $modificationCheck;
-    }
-
-
     public static function GetRecentFile(array $files)
     {
         $files = array_combine($files, array_map('filemtime', $files));
@@ -38,9 +26,9 @@ class FileUtils
         return $recentFile;
     }
 
-    function GetRecentFileModificationDate(string $pathToFiles)
+    public static function GetRecentFileModificationDate(string $filePattern)
     {
-        $files = glob($pathToFiles);
+        $files = glob($filePattern);
         $backupFile = self::GetRecentFile($files);
         $date = self::GetModificationDate($backupFile);
         return $date;
@@ -66,13 +54,5 @@ class FileUtils
         $dateNow = date("Y-m-d H:i");
         $seconds = strtotime($dateNow) - strtotime($date);
         return $seconds / 60 /  60;
-    }
-
-
-    public static function CheckModifactionDate($mdate, $hoursTolerance = TIMETOLERANCE)
-    {
-        $hours = self::GetAgeHours($mdate);
-
-        return $hours <= $hoursTolerance;
     }
 }

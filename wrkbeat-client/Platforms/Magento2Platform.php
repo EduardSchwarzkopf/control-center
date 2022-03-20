@@ -1,7 +1,7 @@
 <?php
 
 
-class Magento2 extends BasePlatform
+class Magento2 extends Platform
 {
 
     function __construct()

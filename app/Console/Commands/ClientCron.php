@@ -41,6 +41,7 @@ class ClientCron extends Command
         // Add Magic here
 
     }
+
     /**
      * Execute the console command.
      *

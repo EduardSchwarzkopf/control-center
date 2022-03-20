@@ -28,7 +28,7 @@ class Utils
             $headers = "From: monitoring@" . self::GetDomain();
 
             $modificationDate = FileUtils::GetModificationDate($timestamp);
-            $modificationCheck = FileUtils::CheckModifactionDate($modificationDate, 1);
+            $modificationCheck = FileUtils::GetAgeHours($modificationDate) > 1;
 
             if ($modificationCheck == false) {
                 $out = mail($to, $subject, $txt, $headers);
@@ -50,17 +50,17 @@ class Utils
         return true;
     }
 
-    public static function GetDiskUsage(): string
+    public static function GetDiskUsage(): int
     {
         return self::GetUsage();
     }
 
-    public static function GetInodesUsage(): string
+    public static function GetInodesUsage(): int
     {
         return self::GetUsage(2);
     }
 
-    private static function GetUsage(int $type = 1): string
+    private static function GetUsage(int $type = 1): int
     {
 
         if ($type == 1) {
@@ -70,9 +70,14 @@ class Utils
         }
 
         $output = exec($command);
-        $percentPos = strpos($output, "%");
 
-        $usage = substr($output, $percentPos - 2, 2);
+        preg_match('/ (\d)%/', $output, $matches, 0, 1);
+
+        $usage = 0.0;
+
+        if (is_array($matches) && is_numeric($matches[1])) {
+            $usage = floatval($matches[1]);
+        }
 
         return $usage;
     }
