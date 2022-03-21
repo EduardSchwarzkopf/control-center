@@ -12,12 +12,13 @@ class ClientEnvironmentSeeder extends Seeder
      *
      * @return void
      */
-    public function run() {
+    public function run()
+    {
         DB::table('client_environments')->insert([
             ['label' => 'None', 'name' => 'none'],
             ['label' => 'Wordpress', 'name' => 'wordpress'],
-            ['label' => 'Magento 1', 'name' => 'magento_1'],
-            ['label' => 'Magento 2', 'name' => 'magento_2']
+            ['label' => 'Magento 1', 'name' => 'magento1'],
+            ['label' => 'Magento 2', 'name' => 'magento2']
         ]);
     }
 }
