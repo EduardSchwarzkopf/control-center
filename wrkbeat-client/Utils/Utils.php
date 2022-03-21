@@ -71,11 +71,11 @@ class Utils
 
         $output = exec($command);
 
-        preg_match('/ (\d)%/', $output, $matches, 0, 1);
+        preg_match('/ (\d+)%/', $output, $matches);
 
         $usage = 0.0;
 
-        if (is_array($matches) && is_numeric($matches[1])) {
+        if (is_array($matches) && count($matches) > 0 && is_numeric($matches[1])) {
             $usage = floatval($matches[1]);
         }
 
