@@ -1,7 +1,9 @@
 <?php
 
-abstract class CheckPlatormBase implements CheckPlatformInterface
+abstract class CheckPlatformBase implements CheckPlatformInterface
 {
+    public string $db_server_info = '';
+
     static public function Run(Platform $platform): bool
     {
 
