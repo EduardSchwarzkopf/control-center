@@ -4,17 +4,37 @@
 abstract class Platform
 {
 
-    private string $_host = '';
-    private string $_database = '';
-    private string $_username = '';
-    private string $_password = '';
+    protected string $_host = '';
+    protected string $_database = '';
+    protected string $_username = '';
+    protected string $_password = '';
+    protected string $_platformRoot = '';
+    protected $_platformConfig = '';
 
-    // Database Backup
-    // Database Backup Check
+    public string $db_server_info = '';
 
-    protected function GetPlatformRootPath(): string
+
+    function __construct($configFilePath)
     {
-        return dirname(dirname(dirname(__FILE__)));
+        $this->_platformRoot = dirname(dirname(dirname(__FILE__)));
+
+        $configPath = $this->_platformRoot . $configFilePath;
+        $this->_platformConfig = $this->LoadPlatformConfigFile($configPath);
+    }
+
+    private function LoadPlatformConfigFile(string $configFilePath)
+    {
+        $platformConfig = include_once($configFilePath);
+
+        if ($platformConfig == false) {
+            $platformConfig = simplexml_load_file($this->_platformRoot . '/app/etc/local.xml');
+
+            if ($platformConfig == false) {
+                throw new Exception($configFilePath . ' not found');
+            }
+        }
+
+        return $platformConfig;
     }
 
     public function CreateSQLDump(string $folder): bool
@@ -41,11 +61,14 @@ abstract class Platform
     {
         try {
 
+            $result = true;
             $conn = new mysqli($this->_host, $this->_username, $this->_password, $this->_database);
 
             if ($conn->connect_error || $conn->error) {
-                $result =  false;
+                $result = false;
             }
+
+            $this->db_server_info = $conn->server_info;
 
             $conn->close();
             return $result;
