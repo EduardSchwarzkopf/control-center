@@ -1,14 +1,15 @@
 <?php
 
 
-class Magento1 extends Platform
+class Magento1Platform extends Platform
 {
 
     function __construct()
     {
-        $rootPath = $this->GetPlatformRootPath();
-        $xmlFile = simplexml_load_file($rootPath . '/app/etc/local.xml');
-        $config = $xmlFile->global->resources->default_setup->connection;
+        $configFilePath = '/app/etc/local.xml';
+        parent::__construct($configFilePath);
+
+        $config = $this->_platformConfig->global->resources->default_setup->connection;
 
         $this->_host = $config->host;
         $this->_database = $config->dbname;
