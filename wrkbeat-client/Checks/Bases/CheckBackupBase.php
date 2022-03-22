@@ -2,6 +2,7 @@
 
 abstract class CheckBackupBase implements CheckFilesInterface
 {
+
     static public function Run(int $threshold, string $pattern = null): bool
     {
 
@@ -9,16 +10,22 @@ abstract class CheckBackupBase implements CheckFilesInterface
             return false;
         }
 
-        $backupfolder = dirname(dirname(__FILE__)) . '/backups';
+        $backupfolder = dirname(dirname(dirname(__FILE__))) . '/backups';
 
         if (is_dir($backupfolder) == false) {
             mkdir($backupfolder, 0755, true);
+            return false;
         }
 
         $backupPattern = $backupfolder . '/' . $pattern;
-        $modificationDateFile = FileUtils::GetRecentFileModificationDate($backupPattern);
+        $backupFile = FileUtils::GetRecentFileByPattern($backupPattern);
 
-        $hours = FileUtils::GetAgeHours($modificationDateFile);
+        if ($backupFile == null) {
+            return false;
+        }
+
+        $date = FileUtils::GetModificationDate($backupFile);
+        $hours = FileUtils::GetAgeHours($date);
         $result =  $hours <= $threshold;
 
         return $result;
