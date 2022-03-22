@@ -4,5 +4,5 @@
 interface CheckFilesInterface
 {
 
-    static public function Run(int $threshold,  string $pattern = null): bool;
+    static public function Run(int $threshold,  ?string $pattern): bool;
 }
