@@ -18,6 +18,13 @@ class FileUtils
         return $files;
     }
 
+    public static function HumanFileSize($bytes, $decimals = 2)
+    {
+        $sz = 'BKMGTP';
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+    }
+
     public static function GetRecentFile(array $files)
     {
         $files = array_combine($files, array_map('filemtime', $files));
@@ -26,12 +33,16 @@ class FileUtils
         return $recentFile;
     }
 
-    public static function GetRecentFileModificationDate(string $filePattern)
+    public static function GetRecentFileByPattern(string $filePattern)
     {
         $files = glob($filePattern);
-        $backupFile = self::GetRecentFile($files);
-        $date = self::GetModificationDate($backupFile);
-        return $date;
+
+        if (count($files) == 0) {
+            return null;
+        }
+
+        $file = self::GetRecentFile($files);
+        return $file;
     }
 
     public static function SortFilesByDate(array $files): array
