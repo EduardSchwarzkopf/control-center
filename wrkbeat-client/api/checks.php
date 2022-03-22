@@ -30,11 +30,9 @@ $postData = $_POST;
 // SQLConnectionCheck
 // BackupCheck
 // CheckSendingMail
-// InodesCheck
-// DiskusageCheck
 
 $monitor = new Monitor;
-$result = $monitor->StartChecks();
+$monitor->StartChecks($_POST);
 
 
 $checkResults = [];
