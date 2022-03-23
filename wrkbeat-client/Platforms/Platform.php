@@ -10,11 +10,13 @@ abstract class Platform
     protected string $_platformRoot = '';
     protected $_platformConfig = '';
 
+    protected bool $_db_result = false;
     protected string $_db_server_info = '';
     protected string $_db_dump_path = '';
     protected int $_db_file_size = 0;
     protected string $_db_human_file_size = '';
 
+    protected bool $_backup_result = false;
     protected string $_backup_dump_path = '';
     protected int $_backup_file_size = 0;
     protected string $_backup_human_file_size = '';
@@ -58,6 +60,11 @@ abstract class Platform
         return $this->_backup_human_file_size;
     }
 
+    public function GetBackupResult(): bool
+    {
+        return $this->_backup_result;
+    }
+
     public function GetSQLDumpPath(): string
     {
         return $this->_db_dump_path;
@@ -71,6 +78,11 @@ abstract class Platform
     public function GetDatabaseHumanFileSize(): string
     {
         return $this->_db_human_file_size;
+    }
+
+    public function GetDabaseResult(): bool
+    {
+        return $this->_db_result;
     }
 
     public function GetDatabaseInfo(): string
@@ -108,6 +120,8 @@ abstract class Platform
             $this->_db_human_file_size = FileUtils::HumanFileSize($this->_db_file_size);
         }
 
+        $this->_db_result = $result;
+
         return $result;
     }
 
@@ -133,8 +147,6 @@ abstract class Platform
 
     public function CreateFilesBackup(array $exludeFolderList = []): bool
     {
-        $result = true;
-
 
         $exlude = '';
         foreach ($exludeFolderList as $excludeFolder) {
@@ -148,11 +160,12 @@ abstract class Platform
 
         $backupFolder = dirname(__FILE__, 2);
         $backupTarget = $this->_platformRoot;
-        $backupPath = $backupFolder . '/' . $file;
-        $cmd = "tar -zcv --exclude=$backupFolder $exlude $backupPath $backupTarget ";
-        $exec = exec($cmd);
+        $backupPath = $backupFolder . '/backups/' . $file;
+        $cmd = "tar zcv --exclude=$backupFolder $exlude -f $backupPath $backupTarget";
+        exec($cmd);
 
         $result = file_exists($backupPath);
+
         if ($result) {
 
             $this->_backup_dump_path = str_replace($this->_platformRoot, '', $file);
@@ -160,6 +173,7 @@ abstract class Platform
             $this->_backup_human_file_size = FileUtils::HumanFileSize($this->_backup_file_size);
         }
 
+        $this->_backup_result = $result;
 
         return $result;
     }
