@@ -8,15 +8,15 @@ class Monitor
 
     public function StartChecks(array $checkList): void
     {
-
-        $checkList = [
-            'diskusage' => 80,
-            'inodes' => 80,
-            'backup_database' => 24,
-            'backup_files' => 24,
-            'email' => 'my@email.com',
-            'wordpress' => true,
-        ];
+        // example checklist
+        // $checkList = [
+        //     'diskusage' => 80,
+        //     'inodes' => 80,
+        //     'backup_database' => 24,
+        //     'backup_files' => 24,
+        //     'email' => 'my@email.com',
+        //     'wordpress' => true,
+        // ];
 
         foreach ($checkList as $checkItem => $value) {
 
@@ -91,6 +91,12 @@ class Monitor
 
     public function JSONResponse(): string
     {
-        return '';
+        $response = [
+            'result' => $this->_result,
+            'error' => $this->_error,
+            'info' => $this->_info
+        ];
+
+        return json_encode($response);
     }
 }
