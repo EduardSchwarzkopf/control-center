@@ -148,15 +148,15 @@ abstract class Platform
 
         $backupFolder = dirname(__FILE__, 2);
         $backupTarget = $this->_platformRoot;
-        $backupPath = $backupFolder . '/' . $file;
-        $cmd = "tar -zcv --exclude=$backupFolder $exlude $backupPath $backupTarget ";
+        $backupPath = $backupFolder . '/backups/' . $file;
+        $cmd = "tar zcv --exclude=$backupFolder $exlude -f $backupPath $backupTarget ";
         $exec = exec($cmd);
 
         $result = file_exists($backupPath);
         if ($result) {
 
             $this->_backup_dump_path = str_replace($this->_platformRoot, '', $file);
-            $this->_backup_file_size = filesize($file);
+            $this->_backup_file_size = filesize($backupPath);
             $this->_backup_human_file_size = FileUtils::HumanFileSize($this->_backup_file_size);
         }
 
