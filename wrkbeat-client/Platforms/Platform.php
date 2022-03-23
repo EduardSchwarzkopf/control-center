@@ -169,7 +169,7 @@ abstract class Platform
         if ($result) {
 
             $this->_backup_dump_path = str_replace($this->_platformRoot, '', $file);
-            $this->_backup_file_size = filesize($file);
+            $this->_backup_file_size = filesize($backupPath);
             $this->_backup_human_file_size = FileUtils::HumanFileSize($this->_backup_file_size);
         }
 
