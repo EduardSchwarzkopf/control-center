@@ -14,7 +14,7 @@ abstract class BasePlatform
 
     protected function GetPlatformRootPath(): string
     {
-        return dirname(dirname(dirname(__FILE__)));
+        return dirname(__FILE__, 3);
     }
 
     public function CreateSQLDump(string $folder): bool
