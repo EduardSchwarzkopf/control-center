@@ -18,11 +18,16 @@ class FileUtils
         return $files;
     }
 
-    public static function HumanFileSize($bytes, $decimals = 2)
+    public static function HumanFileSize(int $bytes, int $decimals = 2): string
     {
         $sz = 'BKMGTP';
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+    }
+
+    public static function FileSizeInGB(int $bytes): int
+    {
+        return round($bytes / 1024 / 1024 / 1024, 4);
     }
 
     public static function GetRecentFile(array $files)
