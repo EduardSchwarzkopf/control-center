@@ -10,7 +10,7 @@ abstract class CheckBackupBase implements CheckFilesInterface
             return false;
         }
 
-        $backupfolder = dirname(__FILE__, 3) . '/backups';
+        $backupfolder = dirname(__DIR__, 2) . '/backups';
 
         if (is_dir($backupfolder) == false) {
             mkdir($backupfolder, 0755, true);
