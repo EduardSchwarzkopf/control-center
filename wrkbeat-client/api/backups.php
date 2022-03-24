@@ -51,27 +51,32 @@ try {
     return;
 }
 
-$platform->CreateJSONResponse();
 
-$createSQLBackup = $postData['sql_dump'] == true ? true : false;
+$createSQLBackup = false;
+if ( array_key_exists('sql_dump', $postData) && $postData['sql_dump'] == true) {
+    $createSQLBackup = true;
+}
 
 $createFilesBackup = false;
-$exludePatternList = $postData['file_dump'];
-if (array_key_exists('file_dump', $postData) && is_array($exludePatternList) == false) {
-    echo json_encode(['message' => 'file_dump must be an array']);
-    return;
-} else {
+
+if (array_key_exists('file_dump', $postData)) {
+
+    $exludePatternList = $postData['file_dump'];
+    if (is_array($exludePatternList) == false) {
+        echo json_encode(['message' => 'file_dump must be an array']);
+        return;
+    }
+
     $createFilesBackup = true;
 }
 
 if ($createFilesBackup) {
-    $backupResult = $platform->CreateFilesBackup($exludePatternList);
+    $response['files_dump'] = $platform->CreateFilesBackup($exludePatternList);
 }
 
 if ($createSQLBackup) {
-    $sqlResult = $platform->CreateSQLDump();
+    $response['sql_dump'] = $platform->CreateSQLDump();
 }
 
 
-
-echo ApiResponse::CreateResponse($platform);
+echo json_encode($response);
