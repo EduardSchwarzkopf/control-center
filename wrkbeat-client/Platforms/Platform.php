@@ -1,6 +1,6 @@
 <?php
 
-abstract class Platform
+abstract class Platform implements ResponseInterface
 {
 
     protected string $_host = '';
@@ -10,21 +10,23 @@ abstract class Platform
     protected string $_platformRoot = '';
     protected $_platformConfig = '';
 
-    protected bool $_db_result = false;
     protected string $_db_server_info = '';
     protected string $_db_dump_path = '';
     protected int $_db_file_size = 0;
     protected string $_db_human_file_size = '';
 
-    protected bool $_backup_result = false;
     protected string $_backup_dump_path = '';
     protected int $_backup_file_size = 0;
     protected string $_backup_human_file_size = '';
 
+    protected array $hideFields = [
+        'hideFields', '_host', '_database', '_username', '_password', '_platformRoot', '_platformConfig'
+    ];
+
 
     function __construct($configFilePath)
     {
-        $this->_platformRoot = dirname(__FILE__, 3);
+        $this->_platformRoot = dirname(__DIR__, 2);
 
         $configPath = $this->_platformRoot . $configFilePath;
         $this->_platformConfig = $this->LoadPlatformConfigFile($configPath);
@@ -45,6 +47,11 @@ abstract class Platform
         return $platformConfig;
     }
 
+    public function GetHiddenFields()
+    {
+        return $this->GetHiddenFields();
+    }
+
     public function GetBackupDumpPath(): string
     {
         return $this->_backup_dump_path;
@@ -60,11 +67,6 @@ abstract class Platform
         return $this->_backup_human_file_size;
     }
 
-    public function GetBackupResult(): bool
-    {
-        return $this->_backup_result;
-    }
-
     public function GetSQLDumpPath(): string
     {
         return $this->_db_dump_path;
@@ -78,11 +80,6 @@ abstract class Platform
     public function GetDatabaseHumanFileSize(): string
     {
         return $this->_db_human_file_size;
-    }
-
-    public function GetDabaseResult(): bool
-    {
-        return $this->_db_result;
     }
 
     public function GetDatabaseInfo(): string
@@ -107,20 +104,18 @@ abstract class Platform
 
         $fileName = date('Y-m-d_H-i-s') . '_' . $database . '_' . $randomString . '.sql.gz';
 
-        $dumpfile = dirname(__FILE__, 2) . '/backups/' . $fileName;
-        $cmd = "mysqldump --user=$username  --password=$password  --host=$host  --routines --skip-triggers --lock-tables=false --default-character-set=utf8  $database --single-transaction=TRUE | gzip > $dumpfile";
+        $dumpFilePath = dirname(__DIR__) . '/backups/' . $fileName;
+        $cmd = "mysqldump --user=$username  --password=$password  --host=$host  --routines --skip-triggers --lock-tables=false --default-character-set=utf8  $database --single-transaction=TRUE | gzip > $dumpFilePath";
         exec($cmd);
 
-        $result = file_exists($dumpfile);
+        $result = file_exists($dumpFilePath);
 
         if ($result) {
 
-            $this->_db_dump_path = str_replace($this->_platformRoot, '', $dumpfile);
-            $this->_db_file_size = filesize($dumpfile);
+            $this->_db_dump_path = str_replace($this->_platformRoot, '', $dumpFilePath);
+            $this->_db_file_size = filesize($dumpFilePath);
             $this->_db_human_file_size = FileUtils::HumanFileSize($this->_db_file_size);
         }
-
-        $this->_db_result = $result;
 
         return $result;
     }
@@ -136,7 +131,7 @@ abstract class Platform
                 $result = false;
             }
 
-            $this->db_server_info = $conn->server_info;
+            $this->_db_server_info = $conn->server_info;
 
             $conn->close();
             return $result;
@@ -145,12 +140,15 @@ abstract class Platform
         }
     }
 
-    public function CreateFilesBackup(array $exludeFolderList = []): bool
+    public function CreateFilesBackup(?array $exludePatternList): bool
     {
+        $result = true;
+
 
         $exlude = '';
-        foreach ($exludeFolderList as $excludeFolder) {
-            $exlude .= "--exclude=$excludeFolder ";
+        $platformPath = $this->_platformRoot;
+        foreach ($exludePatternList as $excludePattern) {
+            $exlude .= "--exclude=$platformPath/$excludePattern ";
         }
 
         $now = date('Y-m-d_H-i-s');
@@ -158,22 +156,19 @@ abstract class Platform
 
         $file = $now . '_files_backup_' . $randomString . '.tgz';
 
-        $backupFolder = dirname(__FILE__, 2);
-        $backupTarget = $this->_platformRoot;
-        $backupPath = $backupFolder . '/backups/' . $file;
-        $cmd = "tar zcv --exclude=$backupFolder $exlude -f $backupPath $backupTarget";
-        exec($cmd);
+        $clientPath = dirname(__DIR__);
+        $backupPath = $clientPath . '/backups/' . $file;
+        $cmd = "tar zcv --exclude=$clientPath $exlude -f $backupPath $platformPath ";
+        $exec = exec($cmd);
 
         $result = file_exists($backupPath);
-
         if ($result) {
 
-            $this->_backup_dump_path = str_replace($this->_platformRoot, '', $file);
+            $this->_backup_dump_path = str_replace($this->_platformRoot, '', $backupPath);
             $this->_backup_file_size = filesize($backupPath);
             $this->_backup_human_file_size = FileUtils::HumanFileSize($this->_backup_file_size);
         }
 
-        $this->_backup_result = $result;
 
         return $result;
     }
