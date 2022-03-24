@@ -27,6 +27,4 @@ $postData = $_POST;
 $monitor = new Monitor;
 $monitor->StartChecks($_POST);
 
-$res = ApiResponse::CreateResponse($monitor);
-
 echo $res;
