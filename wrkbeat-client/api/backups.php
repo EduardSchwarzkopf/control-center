@@ -1,5 +1,5 @@
 <?php
-define('__ROOT__', dirname(__FILE__, 2));
+define('__ROOT__', dirname(__DIR__));
 include(__ROOT__ . '/Autoloader.php');
 
 // $token = JWT::getBearerToken();
@@ -23,8 +23,55 @@ include(__ROOT__ . '/Autoloader.php');
 
 $postData = $_POST;
 
-$platform = new WordpressPlatform();
-// $sqlResult = $platform->CreateSQLDump();
-$backupResult = $platform->CreateFilesBackup();
+// Example:
+$postData = [
+    'platform' => 'wordpress',
+    'sql_dump' => true,
+    'file_dump' => []
+];
 
-$a = 1;
+$platformField = $postData['platform'];
+
+if ($platformField == null) {
+    echo json_encode(['message' => 'platform field required']);
+    return;
+}
+
+if (is_string($platformField) == false) {
+    echo json_encode(['message' => 'platform field must be a string']);
+    return;
+}
+
+$platformName = ucfirst($platformField) . 'Platform';
+try {
+
+    $platform = new $platformName;
+} catch (Exception $e) {
+    echo json_encode(['message' => "platform $platformField not found"]);
+    return;
+}
+
+$platform->CreateJSONResponse();
+
+$createSQLBackup = $postData['sql_dump'] == true ? true : false;
+
+$createFilesBackup = false;
+$exludePatternList = $postData['file_dump'];
+if (array_key_exists('file_dump', $postData) && is_array($exludePatternList) == false) {
+    echo json_encode(['message' => 'file_dump must be an array']);
+    return;
+} else {
+    $createFilesBackup = true;
+}
+
+if ($createFilesBackup) {
+    $backupResult = $platform->CreateFilesBackup($exludePatternList);
+}
+
+if ($createSQLBackup) {
+    $sqlResult = $platform->CreateSQLDump();
+}
+
+
+
+echo ApiResponse::CreateResponse($platform);
