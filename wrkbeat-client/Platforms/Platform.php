@@ -3,19 +3,31 @@
 abstract class Platform
 {
 
-    protected string $host = '';
-    protected string $database = '';
-    protected string $username = '';
-    protected string $password = '';
-    protected string $platformRoot = '';
-    protected $platformConfig = '';
+    protected string $_host = '';
+    protected string $_database = '';
+    protected string $_username = '';
+    protected string $_password = '';
+    protected string $_platformRoot = '';
+    protected $_platformConfig = '';
+
+    protected bool $_db_result = false;
+    protected string $_db_server_info = '';
+    protected string $_db_dump_path = '';
+    protected int $_db_file_size = 0;
+    protected string $_db_human_file_size = '';
+
+    protected bool $_backup_result = false;
+    protected string $_backup_dump_path = '';
+    protected int $_backup_file_size = 0;
+    protected string $_backup_human_file_size = '';
+
 
     function __construct($configFilePath)
     {
-        $this->platformRoot = dirname(__DIR__, 2);
+        $this->_platformRoot = dirname(__FILE__, 3);
 
-        $configPath = $this->platformRoot . $configFilePath;
-        $this->platformConfig = $this->LoadPlatformConfigFile($configPath);
+        $configPath = $this->_platformRoot . $configFilePath;
+        $this->_platformConfig = $this->LoadPlatformConfigFile($configPath);
     }
 
     private function LoadPlatformConfigFile(string $configFilePath)
@@ -23,7 +35,7 @@ abstract class Platform
         $platformConfig = include_once($configFilePath);
 
         if ($platformConfig == false) {
-            $platformConfig = simplexml_load_file($this->platformRoot . '/app/etc/local.xml');
+            $platformConfig = simplexml_load_file($this->_platformRoot . '/app/etc/local.xml');
 
             if ($platformConfig == false) {
                 throw new Exception($configFilePath . ' not found');
@@ -33,50 +45,84 @@ abstract class Platform
         return $platformConfig;
     }
 
-    private function GetResponseList(): array
+    public function GetBackupDumpPath(): string
     {
-        return [
-            'result'=>false,
-            'bytes'=>0,
-            'path'=>null,
-            'size'=>0,
-        ];
+        return $this->_backup_dump_path;
     }
 
-    public function CreateSQLDump(): array
+    public function GetBackupFileSize(): int
+    {
+        return $this->_backup_file_size;
+    }
+
+    public function GetBackupHumanFileSize(): string
+    {
+        return $this->_backup_human_file_size;
+    }
+
+    public function GetBackupResult(): bool
+    {
+        return $this->_backup_result;
+    }
+
+    public function GetSQLDumpPath(): string
+    {
+        return $this->_db_dump_path;
+    }
+
+    public function GetDatabaseFileSize(): int
+    {
+        return $this->_db_file_size;
+    }
+
+    public function GetDatabaseHumanFileSize(): string
+    {
+        return $this->_db_human_file_size;
+    }
+
+    public function GetDabaseResult(): bool
+    {
+        return $this->_db_result;
+    }
+
+    public function GetDatabaseInfo(): string
+    {
+        return $this->_db_server_info;
+    }
+
+    public function CreateSQLDump(): bool
     {
         $sqlCheck = $this->CheckDatabaseConnection();
 
-        $responseList = $this->GetResponseList();
-        $responseList['db_version'] = $this->db_server_info;
-
         if ($sqlCheck == false) {
-            return $responseList;
+            return false;
         }
 
-        $host = $this->host;
-        $database = $this->database;
-        $username = $this->username;
-        $password = $this->password;
+        $host = $this->_host;
+        $database = $this->_database;
+        $username = $this->_username;
+        $password = $this->_password;
 
         $randomString = Utils::RandomString();
 
         $fileName = date('Y-m-d_H-i-s') . '_' . $database . '_' . $randomString . '.sql.gz';
 
-        $dumpFilePath = dirname(__DIR__) . '/backups/' . $fileName;
-        $cmd = "mysqldump --user=$username  --password=$password  --host=$host  --routines --skip-triggers --lock-tables=false --default-character-set=utf8  $database --single-transaction=TRUE | gzip > $dumpFilePath";
+        $dumpfile = dirname(__FILE__, 2) . '/backups/' . $fileName;
+        $cmd = "mysqldump --user=$username  --password=$password  --host=$host  --routines --skip-triggers --lock-tables=false --default-character-set=utf8  $database --single-transaction=TRUE | gzip > $dumpfile";
         exec($cmd);
 
-        if (file_exists($dumpFilePath)) {
+        $result = file_exists($dumpfile);
 
-            $bytes = filesize($dumpFilePath);
-            $responseList['result'] = true;
-            $responseList['path'] = str_replace($this->platformRoot, '', $dumpFilePath);
-            $responseList['bytes'] = $bytes;
-            $responseList['size'] = FileUtils::HumanFileSize($bytes);
+        if ($result) {
+
+            $this->_db_dump_path = str_replace($this->_platformRoot, '', $dumpfile);
+            $this->_db_file_size = filesize($dumpfile);
+            $this->_db_human_file_size = FileUtils::HumanFileSize($this->_db_file_size);
         }
 
-        return $responseList;
+        $this->_db_result = $result;
+
+        return $result;
     }
 
     public function CheckDatabaseConnection(): bool
@@ -84,7 +130,7 @@ abstract class Platform
         try {
 
             $result = true;
-            $conn = new mysqli($this->host, $this->username, $this->password, $this->database);
+            $conn = new mysqli($this->_host, $this->_username, $this->_password, $this->_database);
 
             if ($conn->connect_error || $conn->error) {
                 $result = false;
@@ -99,48 +145,36 @@ abstract class Platform
         }
     }
 
-    //
-    // Doku: Reponse ggf. modularer gestalten für die Zukunft, ist aber aufgrund von Projektbudget nicht vorgehsen
-    //
-    public function CreateFilesBackup(?array $exludePatternList): array
+    public function CreateFilesBackup(array $exludeFolderList = []): bool
     {
-        $responseList = $this->GetResponseList();
 
         $exlude = '';
-        $rootPath = dirname(__DIR__, 3);
-        $platformPath = $this->GetRelativeFilePath($this->platformRoot);
+        foreach ($exludeFolderList as $excludeFolder) {
+            $exlude .= "--exclude=$excludeFolder ";
+        }
 
         $now = date('Y-m-d_H-i-s');
         $randomString = Utils::RandomString();
 
         $file = $now . '_files_backup_' . $randomString . '.tgz';
 
-        $absoluteClientPath = dirname(__DIR__);
+        $backupFolder = dirname(__FILE__, 2);
+        $backupTarget = $this->_platformRoot;
+        $backupPath = $backupFolder . '/backups/' . $file;
+        $cmd = "tar zcv --exclude=$backupFolder $exlude -f $backupPath $backupTarget";
+        $exec = exec($cmd, $out, $oky);
 
-        $clientPath = $this->GetRelativeFilePath($absoluteClientPath);
-        $backupPath = $absoluteClientPath . '/backups/' . $file;
+        $result = file_exists($backupPath);
 
-        foreach ($exludePatternList as $excludePattern) {
-            $exlude .= "--exclude=$excludePattern ";
+        if ($result) {
+
+            $this->_backup_dump_path = str_replace($this->_platformRoot, '', $file);
+            $this->_backup_file_size = filesize($file);
+            $this->_backup_human_file_size = FileUtils::HumanFileSize($this->_backup_file_size);
         }
 
-        $cmd = "tar -cvz --exclude=$clientPath $exlude -C $rootPath -f $backupPath $platformPath";
-        exec($cmd);
+        $this->_backup_result = $result;
 
-        if (file_exists($backupPath)) {
-
-            $bytes = filesize($backupPath);
-            $responseList['result'] = true;
-            $responseList['path'] = str_replace($this->platformRoot, '', $backupPath);
-            $responseList['bytes'] = $bytes;
-            $responseList['size'] = FileUtils::HumanFileSize($bytes);
-        }
-
-        return $responseList;
-    }
-
-    protected function GetRelativeFilePath($filePath) {
-        $rootPath = dirname(__DIR__, 3) . '/';
-        return str_replace($rootPath, '', $filePath);
+        return $result;
     }
 }
