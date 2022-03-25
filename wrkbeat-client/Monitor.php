@@ -1,17 +1,10 @@
 <?php
 
-class Monitor implements ResponseInterface
+class Monitor
 {
     private array $_result = [];
     private array $_info = [];
     private array $_error = [];
-
-    protected array $hideFields = [];
-
-    public function GetHiddenFields()
-    {
-        return $this->hideFields;
-    }
 
     public function StartChecks(array $checkList): void
     {
@@ -94,5 +87,16 @@ class Monitor implements ResponseInterface
 
             $this->_result[$checkItem] = $result;
         }
+    }
+
+    public function JSONResponse(): string
+    {
+        $response = [
+            'result' => $this->_result,
+            'error' => $this->_error,
+            'info' => $this->_info
+        ];
+
+        return json_encode($response);
     }
 }
