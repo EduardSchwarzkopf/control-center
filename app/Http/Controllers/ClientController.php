@@ -30,14 +30,13 @@ class ClientController extends Controller
     {
         $client = Client::create($request->all());
 
-        if ($request->options) {
 
-            try {
-                $optionsList = ['client_id' => $client->id] + $request->options;
-                ClientOption::create($optionsList);
-            } catch (QueryException $ex) {
-                abort(422, 'Error: Could not create client.');
-            }
+        $options = is_array($request->options) ? $request->options : [];
+        try {
+            $optionsList = ['client_id' => $client->id] + $options;
+            ClientOption::create($optionsList);
+        } catch (QueryException $ex) {
+            abort(422, 'Error: Could not create client.');
         }
 
         return ClientRessource::make($client);
