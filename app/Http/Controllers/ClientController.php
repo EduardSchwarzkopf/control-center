@@ -73,6 +73,8 @@ class ClientController extends Controller
             $options->update($optionList);
         }
 
+        $client = $client->fresh();
+
         return new ClientRessource($client);
     }
 
