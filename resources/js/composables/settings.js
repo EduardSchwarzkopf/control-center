@@ -16,7 +16,6 @@ export default function useSettings() {
     const getSetting = async (id) => {
         let response = await axios.get(`/api/settings/${id}`)
         setting.value = response.data
-        console.log(setting.value)
     }
 
     const destroySetting = async (id) => {

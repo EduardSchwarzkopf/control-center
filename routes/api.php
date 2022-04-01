@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\EnvironmentController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -31,4 +32,5 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('settings', SettingController::class);
+    Route::apiResource('environments', EnvironmentController::class);
 });

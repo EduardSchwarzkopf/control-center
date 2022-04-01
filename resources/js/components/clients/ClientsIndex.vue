@@ -30,7 +30,7 @@
                         {{ item.name }}
                     </td>
                     <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">
-                        {{ item.options.url }}
+                        {{ item.url }}
                     </td>
                     <td class="px-6 py-4 text-sm text-right leading-5 text-gray-900 whitespace-no-wrap">
                         <router-link :to="{ name: 'clients.update', params: { id: item.id } }"

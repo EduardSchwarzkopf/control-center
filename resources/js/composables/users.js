@@ -37,7 +37,6 @@ export default function useUsers() {
     const getUser = async (id) => {
         let response = await axios.get(`/api/users/${id}`)
         user.value = response.data
-        console.log(user.value)
     }
 
     const destroyUser = async (id) => {
