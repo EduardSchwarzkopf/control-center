@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('test_histories', function (Blueprint $table) {
+        Schema::create('heartbeats', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
-            $table->boolean('is_up');
-            $table->integer('status_code');
+            $table->string('type');
+            $table->boolean('status');
+            $table->string('value');
+            $table->string('expected_value');
             $table->string('message');
             $table->timestamp('created_at');
         });
@@ -33,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('test_histories');
+        Schema::dropIfExists('heartbeat');
     }
 };
