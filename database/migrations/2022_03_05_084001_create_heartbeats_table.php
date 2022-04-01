@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('type');
             $table->boolean('status');
             $table->string('value');
-            $table->string('expected_value');
             $table->string('message');
             $table->timestamp('created_at');
         });
