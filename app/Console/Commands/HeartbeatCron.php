@@ -200,8 +200,6 @@ class HeartbeatCron extends Command
             $this->clientId = $client->id;
             $this->clientName = $client->name;
 
-            $clientEnvironment = $client->clientEnvironment;
-            $envName = $clientEnvironment->name;
             $clientOptions = $client->options;
 
             $isActive = $client->is_active;
