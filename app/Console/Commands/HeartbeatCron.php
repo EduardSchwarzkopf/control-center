@@ -182,7 +182,7 @@ class HeartbeatCron extends Command
             // Time to check again?
             $heartbeat = Heartbeat::where('client_id', "=", $client->id)->first();
 
-            if (false) {
+            if ($heartbeat) {
 
                 $dbtimestamp = strtotime($heartbeat->created_at);
                 if (time() - $dbtimestamp < $clientOptions->check_interval) {
