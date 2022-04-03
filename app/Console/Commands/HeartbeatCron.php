@@ -195,6 +195,8 @@ class HeartbeatCron extends Command
         $clientList = Client::all();
         $request = new GuzzleHttpClient();
         $clientRequest = new ClientApiRequest();
+        $type = 'status_code';
+        $apiUrl = config('app.client_api_url');
 
         foreach ($clientList as $client) {
             $this->clientId = $client->id;
@@ -208,8 +210,7 @@ class HeartbeatCron extends Command
             }
 
             // Time to check again?
-            $heartbeat = Heartbeat::where('client_id', "=", $client->id)->first();
-
+            $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $type]])->first();
             if ($heartbeat) {
 
                 $dbtimestamp = strtotime($heartbeat->created_at);
@@ -219,12 +220,10 @@ class HeartbeatCron extends Command
             }
 
 
-            $apiUrl = config('app.client_api_url');
             $clientUrl = $client->url;
 
             $checkStatusCode = $this->CheckStatusCode($request, $clientUrl);
             $expectedStatusCode = $client->status_code ? $client->status_code : 200;
-            $type = 'status_code';
             $checkStatusMessage = "Expected: $expectedStatusCode ; Expected: $checkStatusCode";
             $this->CreateHeartbeat($type, $expectedStatusCode == $checkStatusCode, $checkStatusCode, $checkStatusMessage);
 
