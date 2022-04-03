@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('is_active');
             $table->string('url');
+            $table->int('status_code');
 
             $table->timestamps();
         });
