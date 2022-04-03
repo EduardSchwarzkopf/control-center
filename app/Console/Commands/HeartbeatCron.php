@@ -28,7 +28,7 @@ class HeartbeatCron extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Check client health status';
 
     /**
      * Create a new command instance.
