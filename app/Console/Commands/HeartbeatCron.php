@@ -9,11 +9,13 @@ use App\Services\ClientApiRequest;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
-
+use Illuminate\Support\Facades\Log;
 
 class HeartbeatCron extends Command
 {
     private int $clientId = 0;
+    private string $clientName = '';
+
     /**
      * The name and signature of the console command.
      *
@@ -38,11 +40,23 @@ class HeartbeatCron extends Command
         parent::__construct();
     }
 
-    private function TriggerWarning(): void
+    private function TriggerWarning(string $title, string $message): void
     {
 
-        // Add Magic here
+        $to = env('ALERT_RECEIVER');
+        $clientId = $this->clientId;
+        $clientName = $this->clientName;
+        $subject = "CC-WARNING: $clientName ($clientId) - $title";
+        $message = $message;
 
+        $headers = 'From: ' . env('MAIL_USERNAME') . "\r\n";
+        $headers .= "Content-type: text/html\r\n";
+
+        $result = mail($to, $subject, $message, $headers);
+
+        if ($result == false) {
+            Log::error('MAIL ERROR: Could not send email with title: ' . $title);
+        }
     }
 
     private function CreateHeartbeat(string $type, bool $status, string $message, $value = null): void
@@ -65,8 +79,6 @@ class HeartbeatCron extends Command
         } catch (GuzzleException $e) {
 
             $statusCode = $e->getCode();
-
-            $this->TriggerWarning();
         }
 
         return $statusCode;
@@ -89,7 +101,10 @@ class HeartbeatCron extends Command
         $responseList = $this->GetApiResponse($clientRequest, $url, $systemQueryList);
 
         if ($responseList == null) {
-            $this->TriggerWarning();
+            $this->TriggerWarning(
+                'No Response',
+                'No Response on url: ' - $url
+            );
             return;
         }
 
@@ -101,7 +116,10 @@ class HeartbeatCron extends Command
             $message = $checkItem . ' is now at ' . $responseItem . '%';
 
             if ($checkStatus == false) {
-                $this->TriggerWarning();
+                $this->TriggerWarning(
+                    'DISKUSAGE',
+                    $message . '. Max threshold is: ' . $threshold
+                );
             }
 
             $this->CreateHeartbeat($checkItem, $checkStatus, $responseItem, $message);
@@ -129,7 +147,11 @@ class HeartbeatCron extends Command
             $checkStatus = $responseItem < $threshold;
 
             if ($checkStatus == false) {
-                $this->TriggerWarning();
+                $this->TriggerWarning(
+                    'Backup to old',
+                    "Backup age is $responseItem\n
+                    Max allowed hours: $threshold"
+                );
             }
 
             $this->CreateHeartbeat($checkItem, $checkStatus, $responseItem, '');
@@ -142,7 +164,10 @@ class HeartbeatCron extends Command
 
 
         if ($clientResponse == null) {
-            $this->TriggerWarning();
+            $this->TriggerWarning(
+                'NO RESPONSE',
+                "No response from client at $url"
+            );
             return [];
         }
 
@@ -150,7 +175,10 @@ class HeartbeatCron extends Command
 
 
         if ($responseList == null || count($responseList) == 0) {
-            $this->TriggerWarning();
+            $this->TriggerWarning(
+                'NO DATA RECEIVED',
+                'No data reveived from client at ' . $url
+            );
             return [];
         }
 
@@ -170,6 +198,8 @@ class HeartbeatCron extends Command
 
         foreach ($clientList as $client) {
             $this->clientId = $client->id;
+            $this->clientName = $client->name;
+
             $clientEnvironment = $client->clientEnvironment;
             $envName = $clientEnvironment->name;
             $clientOptions = $client->options;
@@ -201,7 +231,10 @@ class HeartbeatCron extends Command
             $this->CreateHeartbeat($type, $expectedStatusCode == $checkStatusCode, $checkStatusCode, $checkStatusMessage);
 
             if ($checkStatusCode != $expectedStatusCode) {
-                $this->TriggerWarning();
+                $this->TriggerWarning(
+                    'STATUS CODE: ' . $checkStatusCode,
+                    'Status code error: ' . $checkStatusMessage
+                );
             }
 
             $baseUrl = $clientUrl . $apiUrl;
