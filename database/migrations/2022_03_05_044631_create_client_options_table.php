@@ -22,14 +22,17 @@ return new class extends Migration
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
 
             $table->integer('check_interval');
+            $table->float('backup_interval')->nullable();
 
             $table->boolean('backup_database_enabled');
             $table->integer('backup_database_max_age')->nullable();
             $table->integer('backup_database_amount')->nullable();
+            $table->integer('backup_database_amount_remote')->nullable();
 
             $table->boolean('backup_files_enabled');
             $table->integer('backup_files_max_age')->nullable();
             $table->integer('backup_files_amount')->nullable();
+            $table->integer('backup_files_amount_remote')->nullable();
 
             $table->float('diskspace_threshold')->nullable();
             $table->float('inodes_threshold')->nullable();
