@@ -39,6 +39,7 @@ class ClientController extends Controller
             abort(422, 'Error: Could not create client.');
         }
 
+        $client = $client->fresh();
         return ClientRessource::make($client);
     }
 
