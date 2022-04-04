@@ -116,6 +116,11 @@ abstract class ClientCron extends Command
         return $responseList;
     }
 
+    protected function GetClientList()
+    {
+        return Client::where('is_active', '=', true);
+    }
+
 
     /**
      * Execute the console command.
@@ -130,7 +135,7 @@ abstract class ClientCron extends Command
             return;
         }
 
-        $clientList = Client::all();
+        $clientList = $this->GetClientList();
 
         foreach ($clientList as $client) {
             $this->client = $client;
@@ -139,11 +144,6 @@ abstract class ClientCron extends Command
             $this->clientApiUrl = $client->url . $this->apiUrl;
 
             $this->clientOptions = $client->options;
-
-            $isActive = $client->is_active;
-            if ($isActive == false) {
-                continue;
-            }
 
             $this->RunCron();
 
