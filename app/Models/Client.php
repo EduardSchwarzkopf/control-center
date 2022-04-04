@@ -12,6 +12,7 @@ class Client extends Model
     public const VALIDATION_RULES = [
         'name' => ['required', 'string'],
         'url' => ['required', 'url'],
+        'status_code' => ['required', 'integer'],
         'is_active' => ['nullable', 'boolean'],
         'client_environment_id' => ['required', 'integer'],
 
@@ -35,11 +36,12 @@ class Client extends Model
         'options.inodes_threshold' => ['nullable', 'integer'],
     ];
 
-    protected $fillable = ['name', 'url', 'is_active', 'client_environment_id'];
+    protected $fillable = ['name', 'url', 'is_active', 'client_environment_id', 'status_code'];
     protected $with = ['options', 'clientEnvironment'];
 
     protected $attributes = [
         'is_active' => true,
+        'status_code' => 200,
     ];
 
     public function options()
