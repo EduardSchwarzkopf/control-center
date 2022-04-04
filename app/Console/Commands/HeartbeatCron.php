@@ -2,19 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Client;
-use App\Models\ClientOption;
 use App\Models\Heartbeat;
-use App\Services\ClientApiRequest;
-use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class HeartbeatCron extends Command
+class HeartbeatCron extends ClientCron
 {
-    private int $clientId = 0;
-    private string $clientName = '';
 
     /**
      * The name and signature of the console command.
@@ -40,54 +32,42 @@ class HeartbeatCron extends Command
         parent::__construct();
     }
 
-    private function TriggerWarning(string $title, string $message): void
+    protected function HeartbeatType(): string
     {
-
-        $to = env('ALERT_RECEIVER');
-        $clientId = $this->clientId;
-        $clientName = $this->clientName;
-        $subject = "CC-WARNING: $clientName ($clientId) - $title";
-        $message = $message;
-
-        $headers = 'From: ' . env('MAIL_USERNAME') . "\r\n";
-        $headers .= "Content-type: text/html\r\n";
-
-        $result = mail($to, $subject, $message, $headers);
-
-        if ($result == false) {
-            Log::error('MAIL ERROR: Could not send email with title: ' . $title);
-        }
+        return 'status_code';
     }
 
-    private function CreateHeartbeat(string $type, bool $status, string $message, $value = null): void
-    {
-        Heartbeat::create([
-            'client_id' => $this->clientId,
-            'type' => $type,
-            'status' => $status,
-            'value' => $value,
-            'message' => $message,
-        ]);
-    }
-
-    private function CheckStatusCode(GuzzleHttpClient $request, string $url): int
+    private function CheckStatusCode(): void
     {
 
+        $client = $this->client;
         try {
-            $res = $request->get($url);
+            $res = $this->httpClient->get($client->url);
             $statusCode = $res->getStatusCode();
         } catch (GuzzleException $e) {
 
             $statusCode = $e->getCode();
         }
 
-        return $statusCode;
+        $expectedStatusCode = $client->status_code ? $client->status_code : 200;
+        $checkStatusMessage = "Expected: $expectedStatusCode ; Expected: $statusCode";
+        $result = $expectedStatusCode == $statusCode;
+
+        $this->CreateHeartbeat($this->heartbeatType, $result, $statusCode, $checkStatusMessage);
+
+        if ($result == false) {
+            $this->TriggerWarning(
+                'STATUS CODE: ' . $statusCode,
+                'Status code error: ' . $checkStatusMessage
+            );
+        }
     }
 
-    private function CheckSystem(ClientOption $clientOptions, ClientApiRequest $clientRequest, $url): void
+    private function CheckSystem(): void
     {
 
         $systemQueryList = [];
+        $clientOptions = $this->clientOptions;
         $diskUsageThreshold = $clientOptions->diskspace_threshold;
         if (is_numeric($diskUsageThreshold) && $diskUsageThreshold > 0) {
             $systemQueryList['diskusage'] = $diskUsageThreshold;
@@ -98,12 +78,13 @@ class HeartbeatCron extends Command
             $systemQueryList['inodes'] = $inodesThreshold;
         }
 
-        $responseList = $this->GetApiResponse($clientRequest, $url, $systemQueryList);
+        $url = $this->clientApiUrl;
+        $responseList = $this->GetApiResponse($this->clientRequest, $url, $systemQueryList);
 
         if ($responseList == null) {
             $this->TriggerWarning(
                 'No Response',
-                'No Response on url: ' - $url
+                'No Response on url: ' . $url
             );
             return;
         }
@@ -126,9 +107,10 @@ class HeartbeatCron extends Command
         }
     }
 
-    private function CheckBackups(ClientOption $clientOptions, ClientApiRequest $clientRequest, $url): void
+    private function CheckBackups(): void
     {
 
+        $clientOptions = $this->clientOptions;
         $backupQueryParameterList = [];
         $databaseMaxHours = $clientOptions->backup_database_max_age;
         if (is_numeric($databaseMaxHours) && $databaseMaxHours > 0) {
@@ -140,7 +122,7 @@ class HeartbeatCron extends Command
             $backupQueryParameterList['database'] = $fileMaxHours;
         }
 
-        $responseList = $this->GetApiResponse($clientRequest, $url, $backupQueryParameterList);
+        $responseList = $this->GetApiResponse($this->clientRequest, $this->clientApiUrl, $backupQueryParameterList);
 
         foreach ($backupQueryParameterList as $checkItem => $threshold) {
             $responseItem = $responseList['data'][$checkItem]['hours'];
@@ -158,85 +140,28 @@ class HeartbeatCron extends Command
         }
     }
 
-    private function GetApiResponse(ClientApiRequest $clientRequest, string $url, array $queryParameterList): array
-    {
-        $clientResponse = $clientRequest->get($url, $queryParameterList);
-
-
-        if ($clientResponse == null) {
-            $this->TriggerWarning(
-                'NO RESPONSE',
-                "No response from client at $url"
-            );
-            return [];
-        }
-
-        $responseList = json_decode($clientResponse->getBody(), true);
-
-
-        if ($responseList == null || count($responseList) == 0) {
-            $this->TriggerWarning(
-                'NO DATA RECEIVED',
-                'No data reveived from client at ' . $url
-            );
-            return [];
-        }
-
-        return $responseList;
-    }
-
     /**
      * Execute the console command.
      *
      * debug with: php -dxdebug.mode=debug -dxdebug.start_with_request=yes artisan heartbeat:cron
      */
-    public function handle()
+    protected function RunCron(): void
     {
-        $clientList = Client::all();
-        $request = new GuzzleHttpClient();
-        $clientRequest = new ClientApiRequest();
-        $type = 'status_code';
-        $apiUrl = config('app.client_api_url');
+        $client = $this->client;
+        $clientOptions = $this->clientOptions;
 
-        foreach ($clientList as $client) {
-            $this->clientId = $client->id;
-            $this->clientName = $client->name;
+        // Time to check again?
+        $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $this->heartbeatType]])->first();
+        if ($heartbeat) {
 
-            $clientOptions = $client->options;
-
-            $isActive = $client->is_active;
-            if ($isActive == false) {
-                continue;
+            $dbtimestamp = strtotime($heartbeat->created_at);
+            if (time() - $dbtimestamp < $clientOptions->check_interval) {
+                return;
             }
-
-            // Time to check again?
-            $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $type]])->first();
-            if ($heartbeat) {
-
-                $dbtimestamp = strtotime($heartbeat->created_at);
-                if (time() - $dbtimestamp < $clientOptions->check_interval) {
-                    continue;
-                }
-            }
-
-
-            $clientUrl = $client->url;
-
-            $checkStatusCode = $this->CheckStatusCode($request, $clientUrl);
-            $expectedStatusCode = $client->status_code ? $client->status_code : 200;
-            $checkStatusMessage = "Expected: $expectedStatusCode ; Expected: $checkStatusCode";
-            $this->CreateHeartbeat($type, $expectedStatusCode == $checkStatusCode, $checkStatusCode, $checkStatusMessage);
-
-            if ($checkStatusCode != $expectedStatusCode) {
-                $this->TriggerWarning(
-                    'STATUS CODE: ' . $checkStatusCode,
-                    'Status code error: ' . $checkStatusMessage
-                );
-            }
-
-            $baseUrl = $clientUrl . $apiUrl;
-            $this->CheckBackups($clientOptions, $clientRequest, $baseUrl . '/backups');
-            $this->CheckSystem($clientOptions, $clientRequest, $baseUrl . '/system');
         }
+
+        $this->CheckStatusCode();
+        $this->CheckBackups();
+        $this->CheckSystem();
     }
 }
