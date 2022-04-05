@@ -40,11 +40,10 @@ class BackupCron extends ClientCron
     protected function GetClientList()
     {
         return Client::where('is_active', "=", true)
-            ->where(function ($query) {
-                $query->orWhere('backup_files_enabled', '=', true)
+            ->with(["options" => function ($q) {
+                $q->orWhere('backup_files_enabled', '=', true)
                     ->orWhere('backup_database_enabled', '=', true);
-            })
-            ->get();
+            }])->get();
     }
 
     private function ClientCreateBackup(string $type): void
