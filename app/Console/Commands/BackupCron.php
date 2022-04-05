@@ -48,7 +48,17 @@ class BackupCron extends ClientCron
 
     private function ClientCreateBackup(string $type): void
     {
-        // TODO: Add Logic here
+
+        $clientEnvironment = $this->client->clientEnvironment;
+        $envName = $clientEnvironment->name;
+
+        $this->clientRequest->post(
+            $this->clientBackupUrl,
+            [
+                'platform' => $envName,
+                $type => true,
+            ]
+        );
     }
 
     private function ClientRotateBackups(string $type): void
