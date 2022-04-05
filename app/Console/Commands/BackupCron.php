@@ -70,12 +70,22 @@ class BackupCron extends ClientCron
         );
 
         $responseList = json_decode($clientBackupResponse->getBody(), true);
-        $clientBackupList = $responseList['data']['files'];
 
-        $count = count($clientBackupList);
+        if (key_exists($type, $responseList['data']) == false) {
+            return;
+        }
 
-        // TODO: Fix logic
-        for ($i = 0; $i < $amount; $i++) {
+        $clientBackupList = $responseList['data'][$type];
+
+        $backupCount = count($clientBackupList);
+
+        if ($amount > $backupCount) {
+            // Not enough backups, abort
+            return;
+        }
+
+        $toRemove = $backupCount - $amount;
+        for ($i = 0; $i < $toRemove; $i++) {
             $backupFile = $clientBackupList[$i];
 
             $backupUrl = $this->clientBackupUrl . '/' . $backupFile['name'];
