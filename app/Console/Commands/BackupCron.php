@@ -7,6 +7,7 @@ use App\Models\Heartbeat;
 
 class BackupCron extends ClientCron
 {
+    private string $clientBackupUrl;
     /**
      * The name and signature of the console command.
      *
@@ -102,9 +103,10 @@ class BackupCron extends ClientCron
     {
 
         $client = $this->client;
-        $clientOptions = $this->getClientOptions;
+        $clientOptions = $this->clientOptions;
         $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $this->heartbeatType]])->first();
-
+        $heartbeat = null;
+        $this->clientBackupUrl = $this->clientApiUrl . '/backups';
 
         if ($heartbeat) {
 
@@ -121,15 +123,15 @@ class BackupCron extends ClientCron
             $key = 'backup_' . $type;
             $this->ClientCreateBackup($type);
 
-            $remoteAmount = $clientOptions[$key . 'amount_remote'];
+            $remoteAmount = $clientOptions[$key . '_amount_remote'];
             if (is_numeric($remoteAmount)) {
                 $this->ClientRotateBackups($type, $remoteAmount);
             }
 
-            $localAmount = $clientOptions[$key . 'amount_remote'];
+            $localAmount = $clientOptions[$key . '_amount_remote'];
             if (is_numeric($localAmount)) {
                 $this->PullBackup($type);
-                $this->RotateBackups($type, $remoteAmount);
+                $this->RotateBackups($type, $localAmount);
             }
         }
     }
