@@ -61,7 +61,7 @@ class BackupCron extends ClientCron
         );
     }
 
-    private function ClientRotateBackups(string $type): void
+    private function ClientRotateBackups(string $type, int $amount): void
     {
         // TODO: Add logic here
     }
