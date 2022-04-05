@@ -63,7 +63,23 @@ class BackupCron extends ClientCron
 
     private function ClientRotateBackups(string $type, int $amount): void
     {
-        // TODO: Add logic here
+        $clientBackupResponse = $this->clientRequest->get(
+            $this->clientBackupUrl,
+            [$type => 'all']
+        );
+
+        $responseList = json_decode($clientBackupResponse->getBody(), true);
+        $clientBackupList = $responseList['data']['files'];
+
+        $count = count($clientBackupList);
+
+        // TODO: Fix logic
+        for ($i = 0; $i < $amount; $i++) {
+            $backupFile = $clientBackupList[$i];
+
+            $backupUrl = $this->clientBackupUrl . '/' . $backupFile['name'];
+            $this->clientRequest->delete($backupUrl);
+        }
     }
 
     private function RotateBackups(string $type): void
