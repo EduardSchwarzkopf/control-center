@@ -17,9 +17,11 @@ class ClientOption extends Model
         'backup_database_enabled',
         'backup_database_max_age',
         'backup_database_amount',
+        'backup_database_amount_remote',
         'backup_files_enabled',
         'backup_files_max_age',
         'backup_files_amount',
+        'backup_files_amount_remote',
         'diskspace_threshold',
         'inodes_threshold',
     ];
