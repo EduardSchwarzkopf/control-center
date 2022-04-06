@@ -71,13 +71,23 @@ class BackupCron extends ClientCron
 
         $responseList = json_decode($clientBackupResponse->getBody(), true);
 
-        if (key_exists($type, $responseList['data']) == false) {
+        $this->clientBackupList = $responseList['data'];
+
+        return $this->clientBackupList;
+    }
+
+    private function ClientRotateBackups(string $type, int $amount): void
+    {
+
+        $backupList = $this->clientBackupList;
+
+        if (key_exists($type, $backupList) == false) {
             return;
         }
 
-        $clientBackupList = $responseList['data'][$type];
+        $backupTypeList = $backupList[$type];
 
-        $backupCount = count($clientBackupList);
+        $backupCount = count($backupTypeList);
 
         if ($amount > $backupCount) {
             // Not enough backups, abort
@@ -86,11 +96,16 @@ class BackupCron extends ClientCron
 
         $toRemove = $backupCount - $amount;
         for ($i = 0; $i < $toRemove; $i++) {
-            $backupFile = $clientBackupList[$i];
+            $backupFile = $backupTypeList[$i];
 
             $backupUrl = $this->clientBackupUrl . '/' . $backupFile['name'];
             $this->clientRequest->delete($backupUrl);
+
+            unset($backupTypeList[$i]);
         }
+
+        // update local list
+        $this->clientBackupList[$type] = $backupTypeList;
     }
 
     private function RotateBackups(string $type): void
