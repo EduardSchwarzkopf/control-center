@@ -144,9 +144,8 @@ class BackupCron extends ClientCron
         $storage = Storage::disk('local');
         $backupTypeList = $backupList[$type];
 
-        // We want the second last backup, because the current one might still be in creation
-        end($backupTypeList);
-        $latestBackup = prev($backupTypeList);
+
+        $latestBackup = end($backupTypeList);
         $latestBackupName = $latestBackup['name'];
         $clientBackupPath = 'backups/' . $this->clientId . '/' . $type . '/' . $latestBackupName;
 
