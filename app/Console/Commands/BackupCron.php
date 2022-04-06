@@ -4,10 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\Heartbeat;
+use Illuminate\Support\Facades\Storage;
 
 class BackupCron extends ClientCron
 {
     private string $clientBackupUrl;
+    private array $clientBackupList;
+
     /**
      * The name and signature of the console command.
      *
@@ -62,11 +65,13 @@ class BackupCron extends ClientCron
         );
     }
 
-    private function ClientRotateBackups(string $type, int $amount): void
+    private function GetClientBackupList(): array
     {
+
+        $all = 'all';
         $clientBackupResponse = $this->clientRequest->get(
             $this->clientBackupUrl,
-            [$type => 'all']
+            ['files' => $all, 'database' => $all]
         );
 
         $responseList = json_decode($clientBackupResponse->getBody(), true);
@@ -111,11 +116,29 @@ class BackupCron extends ClientCron
     private function RotateBackups(string $type): void
     {
         // TODO: Add Logic
+
+        // TODO: place in: storage/backups/client_id/type/file.ext
+        // Check if already exist
     }
 
     private function PullBackup(string $type): void
     {
         // TODO: Add Logic
+
+        $backupList = $this->clientBackupList;
+        if (key_exists($type, $backupList) == false) {
+            return;
+        }
+
+        $latestBackup = end($backupList[$type]);
+
+
+        // TODO: WIP
+        $backupPath = 'backups/' . $this->clientId . '/' . $latestBackup;
+        $filePath = storage_path('app') . $backupPath;
+        if (file_exists($filePath)) {
+            return;
+        }
     }
 
 
@@ -141,6 +164,8 @@ class BackupCron extends ClientCron
                 return;
             }
         }
+
+        $this->clientBackupList = $this->GetClientBackupList();
 
         $backupTypes = ['files', 'database'];
         foreach ($backupTypes as $type) {
