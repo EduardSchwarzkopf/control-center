@@ -198,7 +198,7 @@ class BackupCron extends ClientCron
                 $this->ClientRotateBackups($type, $remoteAmount);
             }
 
-            $localAmount = $clientOptions[$key . '_amount_remote'];
+            $localAmount = $clientOptions[$key . '_amount'];
             if (is_numeric($localAmount)) {
                 $this->PullBackup($type);
                 $this->RotateBackups($type, $localAmount);
