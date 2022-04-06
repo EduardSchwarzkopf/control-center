@@ -100,7 +100,15 @@ class BackupCron extends ClientCron
             return;
         }
 
+        $toRemove = $backupCount - $amount + 1;
+        for ($i = 0; $i < $toRemove; $i++) {
+            $backupFile = $backupTypeList[$i];
 
+            $backupUrl = $this->clientBackupUrl . '/' . $backupFile['name'];
+            $this->clientRequest->delete($backupUrl);
+
+            unset($backupTypeList[$i]);
+        }
 
         // update local list
         $this->clientBackupList[$type] = $backupTypeList;
