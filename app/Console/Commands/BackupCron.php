@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\Heartbeat;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BackupCron extends ClientCron
@@ -99,45 +100,64 @@ class BackupCron extends ClientCron
             return;
         }
 
-        $toRemove = $backupCount - $amount;
-        for ($i = 0; $i < $toRemove; $i++) {
-            $backupFile = $backupTypeList[$i];
 
-            $backupUrl = $this->clientBackupUrl . '/' . $backupFile['name'];
-            $this->clientRequest->delete($backupUrl);
-
-            unset($backupTypeList[$i]);
-        }
 
         // update local list
         $this->clientBackupList[$type] = $backupTypeList;
     }
 
-    private function RotateBackups(string $type): void
+    private function RotateBackups(string $type, int $amount): void
     {
-        // TODO: Add Logic
 
-        // TODO: place in: storage/backups/client_id/type/file.ext
-        // Check if already exist
+        $clientBackupPath = 'backups/' . $this->clientId . '/' . $type;
+
+        $path = storage_path('app') . '/' . $clientBackupPath;
+        $files = glob($path . '/*.*');
+        $localFileCount = count($files);
+        if ($amount >= $localFileCount) {
+            return;
+        }
+
+        $slicedList = array_slice($files, 0, $localFileCount - $amount);
+
+        foreach ($slicedList as $filePath) {
+            unlink($filePath);
+        }
     }
 
     private function PullBackup(string $type): void
     {
-        // TODO: Add Logic
 
         $backupList = $this->clientBackupList;
         if (key_exists($type, $backupList) == false) {
             return;
         }
 
-        $latestBackup = end($backupList[$type]);
+        $storage = Storage::disk('local');
+        $backupTypeList = $backupList[$type];
 
+        // We want the second last backup, because the current one might still be in creation
+        end($backupTypeList);
+        $latestBackup = prev($backupTypeList);
+        $latestBackupName = $latestBackup['name'];
+        $clientBackupPath = 'backups/' . $this->clientId . '/' . $type . '/' . $latestBackupName;
 
-        // TODO: WIP
-        $backupPath = 'backups/' . $this->clientId . '/' . $latestBackup;
-        $filePath = storage_path('app') . $backupPath;
-        if (file_exists($filePath)) {
+        if ($storage->exists($clientBackupPath)) {
             return;
+        }
+
+        $url = $this->clientBackupUrl . '/' . $latestBackupName;
+        $response = $this->clientRequest->get($url, []);
+        $file = $response->getBody()->getContents();
+
+        $isSaved = $storage->put($clientBackupPath, $file);
+
+        if ($isSaved == false) {
+
+            $message = "Backup file: $latestBackupName\ntype: $type";
+
+            $this->TriggerWarning('File not saved', $message);
+            Log::error($message);
         }
     }
 
