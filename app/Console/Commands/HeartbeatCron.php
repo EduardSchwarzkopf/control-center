@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Heartbeat;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class HeartbeatCron extends ClientCron
 {
@@ -110,7 +112,7 @@ class HeartbeatCron extends ClientCron
         $backupQueryParameterList = [];
         $databaseMaxHours = $clientOptions->backup_database_max_age;
         if (is_numeric($databaseMaxHours) && $databaseMaxHours > 0) {
-            $backupQueryParameterList['file'] = $databaseMaxHours;
+            $backupQueryParameterList['files'] = $databaseMaxHours;
         }
 
         $fileMaxHours = $clientOptions->backup_database_max_age;
@@ -118,23 +120,60 @@ class HeartbeatCron extends ClientCron
             $backupQueryParameterList['database'] = $fileMaxHours;
         }
 
-        $responseList = $this->GetApiResponse($this->clientRequest, $this->clientApiUrl, $backupQueryParameterList);
+        $apiBackupUrl = $this->clientApiUrl . '/backups';
+        $responseList = $this->GetApiResponse($this->clientRequest, $this->clientApiUrl . '/backups', $backupQueryParameterList);
 
         foreach ($backupQueryParameterList as $checkItem => $threshold) {
-            $responseItem = $responseList['data'][$checkItem]['hours'];
-            $checkStatus = $responseItem < $threshold;
+            $responseItem = $responseList['data'][$checkItem];
+            $ageHours = $responseItem['hours'];
+            $checkStatus = $ageHours < $threshold;
 
-            if ($checkStatus == false) {
+            if ($checkStatus == true) {
+                // Get Recent Backup from Client
+                $this->PullBackup($apiBackupUrl, $responseItem['name'], $checkItem);
+            } else {
                 $this->TriggerWarning(
                     'Backup to old',
-                    "Backup age is $responseItem\n
+                    "Backup age is $ageHours\n
                     Max allowed hours: $threshold"
                 );
             }
 
-            $this->CreateHeartbeat($checkItem, $checkStatus, $responseItem, '');
+            $this->CreateHeartbeat($checkItem, $checkStatus, $ageHours, '');
         }
     }
+
+    private function PullBackup(string $apiBackupUrl, string $filename, string $backupType): void
+    {
+
+        $localAmount = $this->clientOptions['backup_' . $backupType . '_amount'];
+        if (is_numeric($localAmount) == false && $localAmount < 1) {
+            return;
+        }
+
+        $storage = Storage::disk('local');
+
+        $clientBackupPath = 'backups/' . $this->clientId . '/' . $backupType . '/' . $filename;
+
+        if ($storage->exists($clientBackupPath)) {
+            return;
+        }
+
+        $url = $apiBackupUrl . '/' . $filename;
+        $response = $this->clientRequest->get($url, []);
+        $file = $response->getBody()->getContents();
+
+        $isSaved = $storage->put($clientBackupPath, $file);
+
+        if ($isSaved == false) {
+
+            $message = "Backup file: $filename\ntype: $backupType";
+
+            $this->TriggerWarning('File not saved', $message);
+            Log::error($message);
+        }
+    }
+
 
     /**
      * Execute the console command.
