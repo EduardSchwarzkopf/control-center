@@ -52,7 +52,7 @@ class HeartbeatCron extends ClientCron
         }
 
         $expectedStatusCode = $client->status_code ? $client->status_code : 200;
-        $checkStatusMessage = "Expected: $expectedStatusCode ; Expected: $statusCode";
+        $checkStatusMessage = "Expected: $expectedStatusCode ; Got: $statusCode";
         $result = $expectedStatusCode == $statusCode;
 
         $this->CreateHeartbeat($this->heartbeatType, $result, $statusCode, $checkStatusMessage);
