@@ -57,13 +57,17 @@ class BackupCron extends ClientCron
         $clientEnvironment = $this->client->clientEnvironment;
         $envName = $clientEnvironment->name;
 
-        $this->clientRequest->post(
+        $response = $this->clientRequest->post(
             $this->clientBackupUrl,
             [
                 'platform' => $envName,
                 $type => true,
             ]
         );
+
+        $status_code = $response->getStatusCode();
+
+        $this->CreateHeartbeat($this->heartbeatType, $status_code == 201, '', $type);
     }
 
     private function GetClientBackupList(): array
@@ -145,7 +149,6 @@ class BackupCron extends ClientCron
         $client = $this->client;
         $clientOptions = $this->clientOptions;
         $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $this->heartbeatType]])->first();
-        $heartbeat = null;
         $this->clientBackupUrl = $this->clientApiUrl . '/backups';
 
         if ($heartbeat) {
