@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Carbon\CarbonImmutable;
@@ -30,9 +31,8 @@ class JWTService
         $this->expiresAfter($expiresAfter);
         $this->subject($subject);
         $this->permittedFor($permittedFor);
-        
     }
-    
+
     public function expiresAfter(int $seconds = 60): JWTService
     {
         $this->expires = new DateTimeImmutable();
@@ -43,60 +43,65 @@ class JWTService
         return $this;
     }
 
-    private function issuedBy(string $issuer = ''): JWTService {
+    private function issuedBy(string $issuer = ''): JWTService
+    {
         $this->issuer = empty($issuer) ? config('app.url') : $issuer;
 
         return $this;
     }
 
-    public function permittedFor(string $url = ''):JWTService {
+    public function permittedFor(string $url = ''): JWTService
+    {
         $this->permittedFor = empty($url) ? config('app.url') : $url;
 
         return $this;
     }
 
-    public function subject(string $subject = ''):JWTService {
+    public function subject(string $subject = ''): JWTService
+    {
         $this->subject = empty($subject) ? config('app.name') : $subject;
 
         return $this;
-
     }
 
-    public function payload(array $payload = []):JWTService {
+    public function payload(array $payload = []): JWTService
+    {
         $this->data = $payload;
 
         return $this;
-
     }
-    
-    private function issuedAt():JWTService {
-        
+
+    private function issuedAt(): JWTService
+    {
+
         $date = CarbonImmutable::now()->getTimestamp();
         $this->issuedAt = $date;
 
         return $this;
     }
 
-    public static function base64url_encode(string $data): string {
+    public static function base64url_encode(string $data): string
+    {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }
 
-    public static function base64url_decode(string $data):string {
-    return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
-    }   
+    public static function base64url_decode(string $data): string
+    {
+        return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
+    }
 
-    public function createToken(array $payloadData = []):string
+    public function createToken(array $payloadData = []): string
     {
 
         $keyPrivatePassword = config('app.key');
-        $keyPrivatePath = "storage/private.key";
+        $keyPrivatePath =  storage_path() . '/private.key';
         $cryptMaxCharsValue = 245;
 
         // Definition of header
 
         $header = [
-        'alg' => 'RSA',
-        'typ' => 'JWT'
+            'alg' => 'RSA',
+            'typ' => 'JWT'
         ];
 
         $header = json_encode($header);
@@ -118,18 +123,18 @@ class JWTService
 
         // START ENCRYPT SIGN JWT
 
-        $data = $header.".".$payload;
+        $data = $header . "." . $payload;
 
         // Open private path and return this in string format
 
-        $fp = fopen($keyPrivatePath,"r");
-        $keyPrivateString = fread($fp,8192);
+        $fp = fopen($keyPrivatePath, "r");
+        $keyPrivateString = fread($fp, 8192);
         fclose($fp);
 
         // Open private key string and return 'resourse'
 
-        if(isset($keyPrivatePassword)){
-            $resPrivateKey = openssl_get_privatekey($keyPrivateString,$keyPrivatePassword);
+        if (isset($keyPrivatePassword)) {
+            $resPrivateKey = openssl_get_privatekey($keyPrivateString, $keyPrivatePassword);
         } else {
             $resPrivateKey = openssl_get_privatekey($keyPrivateString);
         }
@@ -141,11 +146,11 @@ class JWTService
 
         $partialData = '';
         $encodedData = '';
-        $split = str_split($rawDataSource , $cryptMaxCharsValue);
-        foreach($split as $part){
+        $split = str_split($rawDataSource, $cryptMaxCharsValue);
+        foreach ($split as $part) {
             openssl_private_encrypt($part, $partialData, $resPrivateKey);
-            
-            $encodedData .= (strlen($encodedData) > 0 ? '.':'') . JWTService::base64url_encode($partialData);
+
+            $encodedData .= (strlen($encodedData) > 0 ? '.' : '') . JWTService::base64url_encode($partialData);
         }
 
 
@@ -155,11 +160,10 @@ class JWTService
 
         $signature = $encodedData;
 
-        $JWTToken = $header.".".$payload.".".$signature;
+        $JWTToken = $header . "." . $payload . "." . $signature;
 
         $this->token = $JWTToken;
-        
-        return $JWTToken;
 
+        return $JWTToken;
     }
 }
