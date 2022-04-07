@@ -133,41 +133,6 @@ class BackupCron extends ClientCron
         }
     }
 
-    private function PullBackup(string $type): void
-    {
-
-        $backupList = $this->clientBackupList;
-        if (key_exists($type, $backupList) == false) {
-            return;
-        }
-
-        $storage = Storage::disk('local');
-        $backupTypeList = $backupList[$type];
-
-
-        $latestBackup = end($backupTypeList);
-        $latestBackupName = $latestBackup['name'];
-        $clientBackupPath = 'backups/' . $this->clientId . '/' . $type . '/' . $latestBackupName;
-
-        if ($storage->exists($clientBackupPath)) {
-            return;
-        }
-
-        $url = $this->clientBackupUrl . '/' . $latestBackupName;
-        $response = $this->clientRequest->get($url, []);
-        $file = $response->getBody()->getContents();
-
-        $isSaved = $storage->put($clientBackupPath, $file);
-
-        if ($isSaved == false) {
-
-            $message = "Backup file: $latestBackupName\ntype: $type";
-
-            $this->TriggerWarning('File not saved', $message);
-            Log::error($message);
-        }
-    }
-
 
     /**
      * Execute the console command.
@@ -207,7 +172,6 @@ class BackupCron extends ClientCron
 
             $localAmount = $clientOptions[$key . '_amount'];
             if (is_numeric($localAmount)) {
-                $this->PullBackup($type);
                 $this->RotateBackups($type, $localAmount);
             }
         }
