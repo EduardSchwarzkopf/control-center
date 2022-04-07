@@ -118,7 +118,7 @@ abstract class ClientCron extends Command
 
     protected function GetClientList()
     {
-        return Client::where('is_active', '=', true);
+        return Client::where('is_active', '=', true)->get();
     }
 
 
