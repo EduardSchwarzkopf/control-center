@@ -78,7 +78,7 @@ class HeartbeatCron extends ClientCron
             $systemQueryList['inodes'] = $inodesThreshold;
         }
 
-        $url = $this->clientApiUrl;
+        $url = $this->clientApiUrl . '/system';
         $responseList = $this->GetApiResponse($this->clientRequest, $url, $systemQueryList);
 
         if ($responseList == null) {
