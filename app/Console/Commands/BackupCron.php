@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\Heartbeat;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class BackupCron extends ClientCron
 {
