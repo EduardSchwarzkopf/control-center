@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\EnvironmentController;
+use App\Http\Controllers\HeartbeatController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -33,4 +34,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('settings', SettingController::class);
     Route::apiResource('environments', EnvironmentController::class);
+
+    Route::get('/heartbeats/{id}', [HeartbeatController::class, 'index']);
+    Route::get('/heartbeats/{id}/{name}', [HeartbeatController::class, 'show']);
 });
