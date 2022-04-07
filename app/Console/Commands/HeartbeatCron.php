@@ -82,10 +82,6 @@ class HeartbeatCron extends ClientCron
         $responseList = $this->GetApiResponse($this->clientRequest, $url, $systemQueryList);
 
         if ($responseList == null) {
-            $this->TriggerWarning(
-                'No Response',
-                'No Response on url: ' . $url
-            );
             return;
         }
 
