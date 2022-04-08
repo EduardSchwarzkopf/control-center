@@ -58,10 +58,7 @@ class HeartbeatCron extends ClientCron
         $this->CreateHeartbeat($this->heartbeatType, $result, $statusCode, $checkStatusMessage);
 
         if ($result == false) {
-            $this->TriggerWarning(
-                'STATUS CODE: ' . $statusCode,
-                'Status code error: ' . $checkStatusMessage
-            );
+            $this->errorList['STATUS CODE: ' . $statusCode] = 'Status code error: ' . $checkStatusMessage;
         }
     }
 
@@ -95,10 +92,7 @@ class HeartbeatCron extends ClientCron
             $message = $checkItem . ' is now at ' . $responseItem . '%';
 
             if ($checkStatus == false) {
-                $this->TriggerWarning(
-                    'DISKUSAGE',
-                    $message . '. Max threshold is: ' . $threshold
-                );
+                $this->errorList['DISKUSAGE'] = $message . '. Max threshold is: ' . $threshold;
             }
 
             $this->CreateHeartbeat($checkItem, $checkStatus, $responseItem, $message);
@@ -132,11 +126,7 @@ class HeartbeatCron extends ClientCron
                 // Get Recent Backup from Client
                 $this->PullBackup($apiBackupUrl, $responseItem['name'], $checkItem);
             } else {
-                $this->TriggerWarning(
-                    'Backup to old',
-                    "Backup age is $ageHours\n
-                    Max allowed hours: $threshold"
-                );
+                $this->errorList['Backup to old'] = "Backup age is $ageHours\nMax allowed hours: $threshold";
             }
 
             $this->CreateHeartbeat($checkItem, $checkStatus, $ageHours, '');
@@ -169,7 +159,7 @@ class HeartbeatCron extends ClientCron
 
             $message = "Backup file: $filename\ntype: $backupType";
 
-            $this->TriggerWarning('File not saved', $message);
+            $this->errorList['File not saved'] = $message;
             Log::error($message);
         }
     }
