@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\SendAlertMail;
 use App\Models\Client;
 use App\Models\ClientOption;
 use App\Models\Heartbeat;
@@ -56,31 +57,37 @@ abstract class ClientCron extends Command
         ]);
     }
 
-    protected function TriggerWarning(): void
+    protected function TriggerAlert(): void
     {
 
         $to = env('ALERT_RECEIVER');
         $clientId = $this->clientId;
         $clientName = $this->clientName;
-        $subject = "CC-WARNING: $clientName ($clientId)";
+        $subject = env('APP_NAME') . " - ALERT: $clientName ($clientId)";
 
         $message = '';
 
         foreach ($this->errorList as $title => $content) {
-
-            if (is_array($content)) {
-                $content =  implode("\n - ", $content);
-            }
-            $message .= "$title:\n$content\n";
+            $message .= "<h3>$title:</h3><p>$content</p>";
         }
 
-        $headers = 'From: ' . env('MAIL_USERNAME') . "\r\n";
-        $headers .= "Content-type: text/html\r\n";
+        $details = [
+            'subject' => $subject,
+            'body' => $message
+        ];
 
-        $result = mail($to, $subject, $message, $headers);
+        if (env('MAIL_USERNAME') && env('MAIL_PASSWORD')) {
+            Mail::to($to)->send(new SendAlertMail($details));
+        } else {
 
-        if ($result == false) {
-            Log::error('MAIL ERROR: Could not send email with title: ' . $title);
+            $headers = 'From: ' . env('MAIL_USERNAME') . "\r\n";
+            $headers .= "Content-type: text/html\r\n";
+
+            $result = mail($to, $subject, $message, $headers);
+
+            if ($result == false) {
+                Log::error('MAIL ERROR: Could not send email with title: ' . $title);
+            }
         }
 
         $this->warn($subject . ': ' . $message);
@@ -136,12 +143,10 @@ abstract class ClientCron extends Command
             $this->clientOptions = $client->options;
 
             $this->RunCron();
-
-            // TODO: Error array and trigger Warnings once
         }
 
         if (count($this->errorList) > 0) {
-            $this->TriggerWarning();
+            $this->TriggerAlert();
         }
     }
 }
