@@ -9,6 +9,7 @@ use App\Services\ClientApiRequest;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 abstract class ClientCron extends Command
 {
@@ -17,27 +18,13 @@ abstract class ClientCron extends Command
     protected ClientApiRequest $clientRequest;
     protected GuzzleHttpClient $httpClient;
     protected string $apiUrl;
-
+    protected array $errorList = [];
 
     protected string $clientApiUrl = '';
     protected int $clientId = 0;
     protected string $clientName = '';
     protected string $heartbeatType = '';
 
-
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    // protected $signature = 'backup:cron';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    // protected $description = 'Cron base for a client';
 
     /**
      * Create a new command instance.
@@ -69,14 +56,23 @@ abstract class ClientCron extends Command
         ]);
     }
 
-    protected function TriggerWarning(string $title, string $message): void
+    protected function TriggerWarning(): void
     {
 
         $to = env('ALERT_RECEIVER');
         $clientId = $this->clientId;
         $clientName = $this->clientName;
-        $subject = "CC-WARNING: $clientName ($clientId) - $title";
-        $message = $message;
+        $subject = "CC-WARNING: $clientName ($clientId)";
+
+        $message = '';
+
+        foreach ($this->errorList as $title => $content) {
+
+            if (is_array($content)) {
+                $content =  implode("\n - ", $content);
+            }
+            $message .= "$title:\n$content\n";
+        }
 
         $headers = 'From: ' . env('MAIL_USERNAME') . "\r\n";
         $headers .= "Content-type: text/html\r\n";
@@ -95,10 +91,7 @@ abstract class ClientCron extends Command
         $clientResponse = $clientRequest->get($url, $queryParameterList);
 
         if ($clientResponse == null) {
-            $this->TriggerWarning(
-                'NO RESPONSE',
-                "No response from client at $url"
-            );
+            $this->errorList['NO RESPONSE'] = "No response from client at $url";
             return [];
         }
 
@@ -106,10 +99,7 @@ abstract class ClientCron extends Command
 
 
         if ($responseList == null || count($responseList) == 0) {
-            $this->TriggerWarning(
-                'NO DATA RECEIVED',
-                'No data reveived from client at ' . $url
-            );
+            $this->errorList['NO DATA RECEIVED'] = 'No data reveived from client at ' . $url;
             return [];
         }
 
@@ -148,6 +138,10 @@ abstract class ClientCron extends Command
             $this->RunCron();
 
             // TODO: Error array and trigger Warnings once
+        }
+
+        if (count($this->errorList) > 0) {
+            $this->TriggerWarning();
         }
     }
 }
