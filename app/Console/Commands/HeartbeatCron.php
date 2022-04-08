@@ -80,7 +80,7 @@ class HeartbeatCron extends ClientCron
         $url = $this->clientApiUrl . '/system';
         $responseList = $this->GetApiResponse($this->clientRequest, $url, $systemQueryList);
 
-        if ($responseList == null) {
+        if (empty($responseList)) {
             return;
         }
 
@@ -117,8 +117,18 @@ class HeartbeatCron extends ClientCron
         $apiBackupUrl = $this->clientApiUrl . '/backups';
         $responseList = $this->GetApiResponse($this->clientRequest, $this->clientApiUrl . '/backups', $backupQueryParameterList);
 
+        if (empty($responseList)) {
+            return;
+        }
+
         foreach ($backupQueryParameterList as $checkItem => $threshold) {
             $responseItem = $responseList['data'][$checkItem];
+
+            // TODO: Trigger alert if requested a second time
+            if (empty($responseItem)) {
+                continue;
+            }
+
             $ageHours = $responseItem['hours'];
             $checkStatus = $ageHours < $threshold;
 
@@ -177,6 +187,7 @@ class HeartbeatCron extends ClientCron
 
         // Time to check again?
         $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $this->heartbeatType]])->first();
+        $heartbeat = null;
         if ($heartbeat) {
 
             $dbtimestamp = strtotime($heartbeat->created_at);
