@@ -22,6 +22,7 @@ class ClientApiRequest
 
     private function CreateAccessToken(): string
     {
+        $this->jwtService->expiresAfter();
         return $this->jwtService->createToken();
     }
 
