@@ -143,10 +143,13 @@ abstract class ClientCron extends Command
             $this->clientOptions = $client->options;
 
             $this->RunCron();
-        }
 
-        if (count($this->errorList) > 0) {
-            $this->TriggerAlert();
+            if (count($this->errorList) > 0) {
+                $this->TriggerAlert();
+            }
+
+            // Reset errors
+            $this->errorList = [];
         }
     }
 }
