@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserRessource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -47,7 +48,7 @@ class ApiAuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::logout();
 
         return [
             'message' => 'Logged out'
