@@ -42,7 +42,9 @@
                                 Settings</router-link
                             >
                         </li>
-                        <li><a class="w-full">Logout</a></li>
+                        <li>
+                            <a v-on:click="logout" class="w-full">Logout</a>
+                        </li>
                     </ul>
                 </div>
             </ul>
@@ -55,6 +57,13 @@ export default {
     props: {
         currentUser: {
             type: Object,
+        },
+    },
+
+    methods: {
+        async logout() {
+            await axios.post("/api/logout");
+            window.location.reload();
         },
     },
 
