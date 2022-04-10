@@ -116,16 +116,19 @@
                             <label
                                 for="check_interval"
                                 class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Check Interval (seconds)</label
+                                >Check Interval</label
                             >
                             <div class="mt-1">
-                                <input
-                                    type="number"
-                                    name="check_interval"
-                                    id="check_interval"
-                                    class="input input-bordered w-full"
-                                    v-model="form.options.check_interval"
-                                />
+                                <label class="input-group">
+                                    <input
+                                        type="number"
+                                        name="check_interval"
+                                        id="check_interval"
+                                        class="input input-bordered w-full"
+                                        v-model="form.options.check_interval"
+                                    />
+                                    <span>sec.</span>
+                                </label>
                             </div>
                         </div>
 
@@ -133,16 +136,19 @@
                             <label
                                 for="backup_interval"
                                 class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Backup interval (hours)</label
+                                >Backup interval</label
                             >
                             <div class="mt-1">
-                                <input
-                                    type="number"
-                                    name="backup_interval"
-                                    id="backup_interval"
-                                    class="input input-bordered w-full"
-                                    v-model="form.options.backup_interval"
-                                />
+                                <label class="input-group">
+                                    <input
+                                        type="number"
+                                        name="backup_interval"
+                                        id="backup_interval"
+                                        class="input input-bordered w-full"
+                                        v-model="form.options.backup_interval"
+                                    />
+                                    <span>hours</span>
+                                </label>
                             </div>
                         </div>
 
@@ -169,18 +175,21 @@
                             <label
                                 for="backup_database_max_age"
                                 class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Database backup max age (hours)</label
+                                >Database backup max age</label
                             >
                             <div class="mt-1">
-                                <input
-                                    type="number"
-                                    name="backup_database_max_age"
-                                    id="backup_database_max_age"
-                                    class="input input-bordered w-full"
-                                    v-model="
-                                        form.options.backup_database_max_age
-                                    "
-                                />
+                                <label class="input-group">
+                                    <input
+                                        type="number"
+                                        name="backup_database_max_age"
+                                        id="backup_database_max_age"
+                                        class="input input-bordered w-full"
+                                        v-model="
+                                            form.options.backup_database_max_age
+                                        "
+                                    />
+                                    <span>hours</span>
+                                </label>
                             </div>
                         </div>
 
@@ -244,16 +253,21 @@
                             <label
                                 for="backup_files_max_age"
                                 class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >File backup max age (hours)</label
+                                >File backup max age</label
                             >
                             <div class="mt-1">
-                                <input
-                                    type="number"
-                                    name="backup_files_max_age"
-                                    id="backup_files_max_age"
-                                    class="input input-bordered w-full"
-                                    v-model="form.options.backup_files_max_age"
-                                />
+                                <label class="input-group">
+                                    <input
+                                        type="number"
+                                        name="backup_files_max_age"
+                                        id="backup_files_max_age"
+                                        class="input input-bordered w-full"
+                                        v-model="
+                                            form.options.backup_files_max_age
+                                        "
+                                    />
+                                    <span>hours</span>
+                                </label>
                             </div>
                         </div>
 
@@ -297,16 +311,21 @@
                             <label
                                 for="diskspace_threshold"
                                 class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Diskspace threshold(percent)</label
+                                >Diskspace threshold</label
                             >
                             <div class="mt-1">
-                                <input
-                                    type="number"
-                                    name="diskspace_threshold"
-                                    id="diskspace_threshold"
-                                    class="input input-bordered w-full"
-                                    v-model="form.options.diskspace_threshold"
-                                />
+                                <label class="input-group">
+                                    <input
+                                        type="number"
+                                        name="diskspace_threshold"
+                                        id="diskspace_threshold"
+                                        class="input input-bordered w-full"
+                                        v-model="
+                                            form.options.diskspace_threshold
+                                        "
+                                    />
+                                    <span>%</span>
+                                </label>
                             </div>
                         </div>
 
@@ -314,16 +333,19 @@
                             <label
                                 for="inodes_threshold"
                                 class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Inodes threshold (percent)</label
+                                >Inodes threshold</label
                             >
                             <div class="mt-1">
-                                <input
-                                    type="number"
-                                    name="inodes_threshold"
-                                    id="inodes_threshold"
-                                    class="input input-bordered w-full"
-                                    v-model="form.options.inodes_threshold"
-                                />
+                                <label class="input-group">
+                                    <input
+                                        type="number"
+                                        name="inodes_threshold"
+                                        id="inodes_threshold"
+                                        class="input input-bordered w-full"
+                                        v-model="form.options.inodes_threshold"
+                                    />
+                                    <span>%</span>
+                                </label>
                             </div>
                         </div>
                     </div>
