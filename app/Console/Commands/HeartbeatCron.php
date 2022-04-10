@@ -187,7 +187,6 @@ class HeartbeatCron extends ClientCron
 
         // Time to check again?
         $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $this->heartbeatType]])->first();
-        $heartbeat = null;
         if ($heartbeat) {
 
             $dbtimestamp = strtotime($heartbeat->created_at);
