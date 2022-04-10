@@ -62,12 +62,10 @@
                 >
                 <div class="mt-1">
                     <select
-                        type="select"
                         name="status_code"
                         id="status_code"
                         class="select select-bordered"
                         v-model="form.status_code"
-                        :disabled="isDisabled"
                     >
                         <option
                             v-for="(status_code, key) in status_code_list"
