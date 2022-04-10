@@ -26,8 +26,7 @@ Route::post('/login', [ApiAuthController::class, 'login']);
 // Protected Routes
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
-    Route::post('/logout', [ApiAuthController::class, 'logout']);
-
+    Route::post('/logout', [ApiAuthController::class, 'logout'])->middleware('auth:web');
     Route::get('/users/current', [ApiAuthController::class, 'currentUser']);
     Route::get('/clients/search/{name}', [ClientController::class, 'search']);
     Route::apiResource('clients', ClientController::class);
