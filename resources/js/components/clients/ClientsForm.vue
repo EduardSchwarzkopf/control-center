@@ -6,11 +6,7 @@
     <form class="space-y-6" v-on:submit.prevent="saveClient">
         <div class="space-y-4 rounded-md shadow-sm">
             <div>
-                <label
-                    for="name"
-                    class="block text-sm font-medium text-gray-700"
-                    >Name</label
-                >
+                <label for="name">Name</label>
                 <div class="mt-1">
                     <input
                         type="text"
@@ -23,9 +19,7 @@
             </div>
 
             <div>
-                <label for="url" class="block text-sm font-medium text-gray-700"
-                    >URL</label
-                >
+                <label for="url">URL</label>
                 <div class="mt-1">
                     <input
                         type="text"
@@ -38,11 +32,7 @@
             </div>
 
             <div>
-                <label
-                    for="is_active"
-                    class="block text-sm font-medium text-gray-700"
-                    >Active</label
-                >
+                <label for="is_active">Active</label>
                 <div class="mt-1">
                     <input
                         type="checkbox"
@@ -55,11 +45,7 @@
             </div>
 
             <div>
-                <label
-                    for="status_code"
-                    class="block text-sm font-medium text-gray-700"
-                    >Expected status code</label
-                >
+                <label for="status_code">Expected status code</label>
                 <div class="mt-1">
                     <select
                         name="status_code"
@@ -79,11 +65,7 @@
             </div>
 
             <div>
-                <label
-                    for="environment"
-                    class="block text-sm font-medium text-gray-700"
-                    >Environment</label
-                >
+                <label for="environment">Environment</label>
                 <div class="mt-1">
                     <select
                         v-model="form.client_environment_id"
