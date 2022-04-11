@@ -1,17 +1,15 @@
 <template>
     <div class="flex place-content-end mb-4">
-        <div class="btn btn-primary">
-            <router-link :to="{ name: 'clients.create' }"
-                >Create client</router-link
-            >
-        </div>
+        <router-link class="btn btn-primary" :to="{ name: 'clients.create' }"
+            >Create client</router-link
+        >
     </div>
 
     <div class="overflow-x-auto">
         <table class="table table-zebra w-full text-center">
-            <!-- head -->
             <thead>
                 <tr>
+                    <th>Id</th>
                     <th>Name</th>
                     <th>URL</th>
                     <th>Active</th>
@@ -20,6 +18,9 @@
             </thead>
             <tbody>
                 <tr v-for="item in clients" :key="item.id">
+                    <td>
+                        {{ item.id }}
+                    </td>
                     <td>
                         {{ item.name }}
                     </td>
@@ -47,7 +48,6 @@
                         </button>
                     </td>
                 </tr>
-                <!-- row 1 -->
             </tbody>
         </table>
     </div>
