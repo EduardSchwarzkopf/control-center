@@ -1,7 +1,10 @@
 <template>
     <div class="navbar bg-base-100">
         <div class="flex-1">
-            <a class="normal-case text-xl" href="/">Control Center</a>
+            <a class="normal-case text-xl" href="/">
+                <Logo class="inline mr-2" />
+                Control Center</a
+            >
         </div>
         <div class="flex-none">
             <ul class="menu menu-horizontal p-0 space-x-2">
@@ -53,7 +56,9 @@
 </template>
 
 <script>
+import Logo from "./LogoComponent.vue";
 export default {
+    components: { Logo },
     props: {
         currentUser: {
             type: Object,
