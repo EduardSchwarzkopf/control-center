@@ -16,11 +16,11 @@
         </div>
     </div>
     <div v-else>
-        <div class="flex flex-row min-h-screen justify-center items-center">
-            <div class="place-content-center card w-96 bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title">Loading...</h2>
-                </div>
+        <div
+            class="flex flex-row min-h-screen justify-center items-center text-center"
+        >
+            <div class="flex justify-center items-center">
+                <button class="btn btn-square loading"></button>
             </div>
         </div>
     </div>
