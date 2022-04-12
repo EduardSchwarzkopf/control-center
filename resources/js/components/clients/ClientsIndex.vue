@@ -4,7 +4,6 @@
             >Create client</router-link
         >
     </div>
-
     <div class="overflow-x-auto">
         <table class="table table-zebra w-full text-center">
             <thead>
@@ -31,6 +30,15 @@
                         {{ item.is_active }}
                     </td>
                     <td>
+                        <router-link
+                            :to="{
+                                name: 'client.show',
+                                params: { id: item.id },
+                            }"
+                            class="mr-2 btn btn-primary btn-sm"
+                        >
+                            Show</router-link
+                        >
                         <router-link
                             :to="{
                                 name: 'clients.update',
