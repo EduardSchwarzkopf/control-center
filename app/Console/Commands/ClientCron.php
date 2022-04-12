@@ -46,7 +46,7 @@ abstract class ClientCron extends Command
     abstract protected function RunCron(): void;
     abstract protected function HeartbeatType(): string;
 
-    protected function CreateHeartbeat(string $type, bool $status, string $message, $value = null): void
+    protected function CreateHeartbeat(string $type, bool $status, string $message = '', $value = null): void
     {
         Heartbeat::create([
             'client_id' => $this->clientId,
@@ -127,14 +127,15 @@ abstract class ClientCron extends Command
     public function handle()
     {
 
-        $type = $this->heartbeatType;
-        if (empty($type)) {
+
+        if (empty($this->heartbeatType)) {
             return;
         }
 
         $clientList = $this->GetClientList();
-
         foreach ($clientList as $client) {
+
+            $clientStatus = true;
             $this->client = $client;
             $this->clientId = $client->id;
             $this->clientName = $client->name;
@@ -146,10 +147,12 @@ abstract class ClientCron extends Command
 
             if (count($this->errorList) > 0) {
                 $this->TriggerAlert();
+
+                $clientStatus = false;
+                $this->errorList = [];
             }
 
-            // Reset errors
-            $this->errorList = [];
+            $this->CreateHeartbeat('status', $clientStatus);
         }
     }
 }
