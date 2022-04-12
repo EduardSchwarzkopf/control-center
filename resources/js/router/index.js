@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import ClientsIndex from "../components/clients/ClientsIndex.vue";
 import ClientsForm from "../components/clients/ClientsForm.vue";
+import ClientShow from "../components/clients/ClientShow.vue";
 import UsersIndex from "../components/users/UsersIndex.vue";
 import UpdateUsersForm from "../components/users/UpdateUsersForm.vue";
 import CreateUsersForm from "../components/users/CreateUsersForm.vue";
@@ -26,6 +27,12 @@ const routes = [
                 path: "/clients/create",
                 name: "clients.create",
                 component: ClientsForm,
+            },
+            {
+                path: "/clients/:id",
+                name: "client.show",
+                component: ClientShow,
+                props: true,
             },
             {
                 path: "/clients/:id/update",
