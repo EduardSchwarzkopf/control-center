@@ -22,23 +22,25 @@ const routes = [
                 path: "/dashboard",
                 name: "clients.index",
                 component: ClientsIndex,
-            },
-            {
-                path: "/clients/create",
-                name: "clients.create",
-                component: ClientsForm,
-            },
-            {
-                path: "/clients/:id",
-                name: "client.show",
-                component: ClientShow,
-                props: true,
-            },
-            {
-                path: "/clients/:id/update",
-                name: "clients.update",
-                component: ClientsForm,
-                props: true,
+                children: [
+                    {
+                        path: "/clients/create",
+                        name: "clients.create",
+                        component: ClientsForm,
+                    },
+                    {
+                        path: "/clients/:id",
+                        name: "client.show",
+                        component: ClientShow,
+                        props: true,
+                    },
+                    {
+                        path: "/clients/:id/update",
+                        name: "clients.update",
+                        component: ClientsForm,
+                        props: true,
+                    },
+                ],
             },
             {
                 path: "/users",
