@@ -81,6 +81,21 @@
                     </select>
                 </div>
             </div>
+            <div v-if="form.options">
+                <label for="check_interval">Check Interval</label>
+                <div class="mt-1">
+                    <label class="input-group">
+                        <input
+                            type="number"
+                            name="check_interval"
+                            id="check_interval"
+                            class="input input-bordered w-full"
+                            v-model="form.options.check_interval"
+                        />
+                        <span>sec.</span>
+                    </label>
+                </div>
+            </div>
 
             <div class="divider mt-8"></div>
 
@@ -95,31 +110,7 @@
                 <div class="collapse-content">
                     <div v-if="form.options">
                         <div>
-                            <label
-                                for="check_interval"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Check Interval</label
-                            >
-                            <div class="mt-1">
-                                <label class="input-group">
-                                    <input
-                                        type="number"
-                                        name="check_interval"
-                                        id="check_interval"
-                                        class="input input-bordered w-full"
-                                        v-model="form.options.check_interval"
-                                    />
-                                    <span>sec.</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label
-                                for="backup_interval"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
-                                >Backup interval</label
-                            >
+                            <label for="backup_interval">Backup interval</label>
                             <div class="mt-1">
                                 <label class="input-group">
                                     <input
@@ -135,9 +126,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_database_enabled"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_database_enabled"
                                 >Database backup enabled</label
                             >
                             <div class="mt-1">
@@ -154,9 +143,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_database_max_age"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_database_max_age"
                                 >Database backup max age</label
                             >
                             <div class="mt-1">
@@ -176,9 +163,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_database_amount"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_database_amount"
                                 >Database backup on this server</label
                             >
                             <div class="mt-1">
@@ -186,7 +171,7 @@
                                     type="number"
                                     name="backup_database_amount"
                                     id="backup_database_amount"
-                                    class="input input-bordered w-full"
+                                    class="input input-bordered"
                                     v-model="
                                         form.options.backup_database_amount
                                     "
@@ -195,9 +180,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_database_amount_remote"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_database_amount_remote"
                                 >Database backup on client</label
                             >
                             <div class="mt-1">
@@ -215,9 +198,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_files_enabled"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_files_enabled"
                                 >File backup enabled</label
                             >
                             <div class="mt-1">
@@ -232,9 +213,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_files_max_age"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_files_max_age"
                                 >File backup max age</label
                             >
                             <div class="mt-1">
@@ -254,9 +233,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_files_amount"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_files_amount"
                                 >File backup amount on this server</label
                             >
                             <div class="mt-1">
@@ -271,9 +248,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="backup_files_amount_remote"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="backup_files_amount_remote"
                                 >File backup amount on client</label
                             >
                             <div class="mt-1">
@@ -290,9 +265,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="diskspace_threshold"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="diskspace_threshold"
                                 >Diskspace threshold</label
                             >
                             <div class="mt-1">
@@ -312,9 +285,7 @@
                         </div>
 
                         <div>
-                            <label
-                                for="inodes_threshold"
-                                class="block first-letter:uppercase text-sm font-medium text-gray-700"
+                            <label for="inodes_threshold"
                                 >Inodes threshold</label
                             >
                             <div class="mt-1">
