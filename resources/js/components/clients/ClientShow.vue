@@ -16,7 +16,7 @@
                         Edit</router-link
                     >
                     <button
-                        @click="deleteClient(item.id)"
+                        @click="deleteClient(client.id)"
                         class="btn btn-outline btn-error btn-sm"
                     >
                         Delete
@@ -69,49 +69,6 @@
                 >
             </div>
         </div>
-
-        <div class="my-12"></div>
-
-        <div
-            v-if="client.options"
-            class="flex space-x-3 shadow bg-white p-4 rounded"
-        >
-            <div v-if="client.options.diskspace_threshold">
-                <h4>Diskusage usage</h4>
-                <Chart
-                    :size="{ width: 400, height: 200 }"
-                    :data="data"
-                    :margin="margin"
-                    :direction="direction"
-                    :axis="axis"
-                >
-                    <template #layers>
-                        <Grid strokeDasharray="2,2" />
-                        <Line :dataKeys="['name', 'pl']" type="monotone" />
-                    </template>
-                </Chart>
-                <small
-                    >Check every:
-                    {{ client.options.check_interval }} Seconds</small
-                >
-            </div>
-
-            <div v-if="client.options.inodes_threshold">
-                <h4>Inodes Usage</h4>
-                <Chart
-                    :size="{ width: 400, height: 200 }"
-                    :data="data"
-                    :margin="margin"
-                    :direction="direction"
-                    :axis="axis"
-                >
-                    <template #layers>
-                        <Grid strokeDasharray="2,2" />
-                        <Line :dataKeys="['name', 'pl']" type="monotone" />
-                    </template>
-                </Chart>
-            </div>
-        </div>
     </div>
     <div v-else>
         <div
@@ -128,8 +85,6 @@
 import useClients from "../../composables/clients";
 import useEnvironments from "../../composables/environments";
 import useHeartbeats from "../../composables/heartbeats";
-import { ref } from "vue";
-import { Chart, Grid, Line, Marker } from "vue3-charts";
 
 export default {
     props: {
@@ -137,7 +92,8 @@ export default {
             type: [String, Number],
         },
     },
-    components: { Chart, Grid, Line, Marker },
+
+    methods: {},
 
     computed: {
         lastHeartbeat() {
@@ -150,7 +106,16 @@ export default {
         const { heartbeats, getHeartbeats } = useHeartbeats();
         getEnvironments();
 
-        const { client, getClient } = useClients();
+        const { client, getClient, destroyClient } = useClients();
+
+        const deleteClient = async (id) => {
+            if (!window.confirm("You sure?")) {
+                return;
+            }
+
+            destroyClient(id);
+        };
+
         const clientId =
             props.id == null
                 ? window.location.pathname.match(/\d+/)[0]
@@ -158,43 +123,11 @@ export default {
         getClient(clientId);
         getHeartbeats(clientId, "status", 30);
 
-        const data = [
-            { name: "Jan", pl: 1000, avg: 500, inc: 300 },
-            { name: "Feb", pl: 2000, avg: 900, inc: 400 },
-            { name: "Apr", pl: 400, avg: 400, inc: 500 },
-            { name: "Mar", pl: 3100, avg: 1300, inc: 700 },
-            { name: "May", pl: 200, avg: 100, inc: 200 },
-            { name: "Jun", pl: 600, avg: 400, inc: 300 },
-            { name: "Jul", pl: 500, avg: 90, inc: 100 },
-        ];
-
-        const direction = ref("horizontal");
-        const margin = ref({
-            left: 0,
-            top: 20,
-            right: 20,
-            bottom: 0,
-        });
-
-        const axis = ref({
-            primary: {
-                type: "band",
-            },
-            secondary: {
-                domain: ["dataMin", "dataMax + 100"],
-                type: "linear",
-                ticks: 8,
-            },
-        });
-
         return {
             heartbeats,
-            data,
-            margin,
-            axis,
-            direction,
             environments,
             client,
+            deleteClient,
         };
     },
 };
