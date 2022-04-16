@@ -32,6 +32,11 @@ class ClientOption extends Model
         'backup_database_enabled' => false,
     ];
 
+    protected $casts = [
+        'backup_database_enabled' => 'boolean',
+        'backup_files_enabled' => 'boolean',
+    ];
+
 
     public function getClientPayload(): array
     {
