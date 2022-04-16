@@ -10,6 +10,22 @@ module.exports = {
 
     theme: {
         extend: {
+            colors: {
+                primary: {
+                    50: "#f4fefa",
+                    100: "#e9fcf5",
+                    200: "#c7f8e6",
+                    300: "#a6f3d6",
+                    400: "#63ebb8",
+                    500: "#20E299",
+                    600: "#1dcb8a",
+                    700: "#18aa73",
+                    800: "#13885c",
+                    900: "#106f4b",
+                    DEFAULT: "#20E299",
+                },
+            },
+
             fontFamily: {
                 sans: ["Nunito", ...defaultTheme.fontFamily.sans],
             },
@@ -28,20 +44,6 @@ module.exports = {
                     success: "#14E31F",
                     warning: "#facc15",
                     error: "#E34120",
-                    colors: {
-                        primary: {
-                            50: "#f4fefa",
-                            100: "#e9fcf5",
-                            200: "#c7f8e6",
-                            300: "#a6f3d6",
-                            400: "#63ebb8",
-                            500: "#20E299",
-                            600: "#1dcb8a",
-                            700: "#18aa73",
-                            800: "#13885c",
-                            900: "#106f4b",
-                        },
-                    },
                 },
             },
         ],
