@@ -52,8 +52,10 @@ export default {
     },
     setup() {
         const { clients, getClients } = useClients();
+        const clientPath = window.location.pathname.match(/\d+/);
+        const clientId = clientPath == null ? clientPath : clientPath[0];
         const state = reactive({
-            clientId: window.location.pathname.match(/\d+/)[0],
+            clientId: clientId,
         });
         getClients();
         return {
