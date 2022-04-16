@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Heartbeat;
+use Illuminate\Http\Request;
 
 class HeartbeatController extends Controller
 {
@@ -13,7 +14,7 @@ class HeartbeatController extends Controller
      */
     public function index($clientId)
     {
-        $list = Heartbeat::where('client_id', "=", $clientId)->get();
+        $list = Heartbeat::where('client_id', "=", $clientId)->latest()->get();
         return $list;
     }
 
@@ -23,8 +24,15 @@ class HeartbeatController extends Controller
      * @param  \App\Models\Heartbeat  $heartbeat
      * @return \Illuminate\Http\Response
      */
-    public function show($clientId, $type)
+    public function show(Request $request, $clientId, $type)
     {
-        return Heartbeat::where([['client_id', "=", $clientId], ['type', '=', $type]])->first();
+        $amount = $request->amount;
+
+        $maxAmount = 30;
+        if (is_numeric($amount) && ($amount < 0 || $amount > $maxAmount)) {
+            $amount = $maxAmount;
+        }
+
+        return Heartbeat::where([['client_id', "=", $clientId], ['type', '=', $type]])->latest()->take($amount)->get();
     }
 }
