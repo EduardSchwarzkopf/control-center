@@ -53,6 +53,9 @@ export default {
             this.state.clientId = id;
         },
     },
+    beforeRouteUpdate(to, from) {
+        this.updateClientList();
+    },
     setup() {
         const { clients, getClients } = useClients();
         const clientPath = window.location.pathname.match(/\d+/);
@@ -60,9 +63,12 @@ export default {
         const state = reactive({
             clientId: clientId,
         });
+
+        const updateClientList = getClients;
         getClients();
         return {
             clients,
+            updateClientList,
             state,
         };
     },
