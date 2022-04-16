@@ -49,6 +49,10 @@ class Client extends Model
         return $this->hasOne(ClientOption::class);
     }
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
 
     public function heartbeats()
     {
