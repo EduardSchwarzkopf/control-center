@@ -2,7 +2,7 @@
     <div class="navbar bg-base-100">
         <div class="flex-1">
             <a class="normal-case text-xl" href="/">
-                <Logo class="inline mr-2" />
+                <Logo class="inline mr-2 text-primary" />
                 Control Center</a
             >
         </div>
