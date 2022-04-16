@@ -307,14 +307,6 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Save</button>
-
-        <button
-            type="button"
-            class="btn btn-ghost ml-3"
-            @click="$router.push('/dashboard')"
-        >
-            Cancel
-        </button>
     </form>
 </template>
 
