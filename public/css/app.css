@@ -427,19 +427,6 @@ html {
   --er: 10 78% 51%;
 }
 
-:root colors primary {
-  50: #f4fefa;
-  100: #e9fcf5;
-  200: #c7f8e6;
-  300: #a6f3d6;
-  400: #63ebb8;
-  500: #20E299;
-  600: #1dcb8a;
-  700: #18aa73;
-  800: #13885c;
-  900: #106f4b;
-}
-
 *, ::before, ::after {
   --tw-translate-x: 0;
   --tw-translate-y: 0;
@@ -2345,7 +2332,7 @@ body[dir="rtl"] .checkbox:checked,
 }
 .bg-primary {
   --tw-bg-opacity: 1;
-  background-color: hsl(var(--p) / var(--tw-bg-opacity));
+  background-color: rgb(32 226 153 / var(--tw-bg-opacity));
 }
 .bg-error {
   --tw-bg-opacity: 1;
@@ -2354,6 +2341,10 @@ body[dir="rtl"] .checkbox:checked,
 .bg-base-100 {
   --tw-bg-opacity: 1;
   background-color: hsl(var(--b1) / var(--tw-bg-opacity));
+}
+.bg-primary-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(233 252 245 / var(--tw-bg-opacity));
 }
 .bg-blue-500 {
   --tw-bg-opacity: 1;
@@ -2560,7 +2551,7 @@ body[dir="rtl"] .checkbox:checked,
 }
 .text-primary {
   --tw-text-opacity: 1;
-  color: hsl(var(--p) / var(--tw-text-opacity));
+  color: rgb(32 226 153 / var(--tw-text-opacity));
 }
 .underline {
   -webkit-text-decoration-line: underline;
