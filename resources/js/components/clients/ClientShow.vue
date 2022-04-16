@@ -124,7 +124,7 @@ import { Chart, Grid, Line, Marker } from "vue3-charts";
 export default {
     props: {
         id: {
-            type: String,
+            type: [String, Number],
         },
     },
     components: { Chart, Grid, Line, Marker },
