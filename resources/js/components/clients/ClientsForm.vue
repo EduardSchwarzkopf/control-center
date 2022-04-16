@@ -313,7 +313,7 @@
 <script>
 import useClients from "../../composables/clients";
 import useEnvironments from "../../composables/environments";
-import { onMounted, reactive } from "vue";
+import { reactive } from "vue";
 
 export default {
     props: {
