@@ -53,7 +53,7 @@ class ClientApiRequest
             $res = $request->request($method, $url, $options);
         } catch (GuzzleException $e) {
             $message = $e->getMessage();
-            $this->logging($message);
+            $this->logging("CLIENT REQUEST ERROR: $message");
         }
 
         return $res;
