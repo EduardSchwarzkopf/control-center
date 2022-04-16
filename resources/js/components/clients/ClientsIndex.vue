@@ -20,7 +20,9 @@
                         >
                             <div
                                 class="w-full hover:bg-gray-100 rounded px-2 py-4"
-                                :class="`${item.is_active ? 'opacity-50' : ''}
+                                :class="`${
+                                    item.is_active == false ? 'opacity-50' : ''
+                                }
                                 ${
                                     state.clientId == item.id
                                         ? 'bg-primary-100'
