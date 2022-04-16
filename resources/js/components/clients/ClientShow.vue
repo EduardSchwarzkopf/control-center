@@ -45,7 +45,7 @@
                         <div
                             class="py-3 px-1 rounded"
                             :class="
-                                heartbeat.status ? 'bg-success' : 'bg-error'
+                                heartbeat.status ? 'bg-primary' : 'bg-error'
                             "
                         ></div>
                     </div>
@@ -54,7 +54,7 @@
                     <div
                         :class="
                             'badge badge-lg text-white bg-' +
-                            (lastHeartbeat.status ? 'success' : 'error')
+                            (lastHeartbeat.status ? 'primary' : 'error')
                         "
                     >
                         {{ lastHeartbeat.status ? "Up" : "Down" }}
