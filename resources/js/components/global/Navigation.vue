@@ -74,8 +74,6 @@ export default {
 
     setup(props) {
         const currentUser = props.currentUser;
-
-        console.log(currentUser);
         return { currentUser };
     },
 };
