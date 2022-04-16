@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class=""><router-view :key="state.cliendId" /></div>
+            <div class="col-span-2"><router-view :key="state.cliendId" /></div>
         </div>
     </div>
 </template>
