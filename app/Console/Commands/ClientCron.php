@@ -46,7 +46,7 @@ abstract class ClientCron extends Command
     abstract protected function RunCron(): void;
     abstract protected function HeartbeatType(): string;
 
-    protected function CreateHeartbeat(string $type, bool $status, string $message = '', $value = null): void
+    protected function CreateHeartbeat(string $type, bool $status, string $message = '', $value = ''): void
     {
         Heartbeat::create([
             'client_id' => $this->clientId,
