@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <div class="grid grid-cols-3 gap-3">
+        <div class="md:grid md:grid-cols-3 md:gap-3">
             <div class="col-span-1 p-6 bg-white rounded">
                 <div class="flex place-content-end mb-4">
                     <router-link
@@ -10,13 +10,7 @@
                     >
                 </div>
                 <div class="space-y-2">
-                    <div
-                        :class="
-                            state.cliendId == item.id ? 'bg-primary-100' : ''
-                        "
-                        v-for="item in clients"
-                        :key="item.id"
-                    >
+                    <div v-for="item in clients" :key="item.id">
                         <router-link
                             :to="{
                                 name: 'client.show',
@@ -26,7 +20,12 @@
                         >
                             <div
                                 class="w-full hover:bg-gray-100 rounded px-2 py-4"
-                                :class="`${item.is_active ? 'opacity-50' : ''}`"
+                                :class="`${item.is_active ? 'opacity-50' : ''}
+                                ${
+                                    state.clientId == item.id
+                                        ? 'bg-primary-100'
+                                        : ''
+                                }`"
                             >
                                 {{ item.name }}
                             </div>
@@ -34,7 +33,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-span-2"><router-view :key="state.cliendId" /></div>
+            <div class="md:col-span-2">
+                <router-view :key="state.clientId" :id="state.clientId" />
+            </div>
         </div>
     </div>
 </template>
@@ -46,12 +47,14 @@ import { reactive } from "vue";
 export default {
     methods: {
         setClientId(id) {
-            this.state.cliendId = id;
+            this.state.clientId = id;
         },
     },
     setup() {
         const { clients, getClients } = useClients();
-        const state = reactive({ cliendId: 0 });
+        const state = reactive({
+            clientId: window.location.pathname.match(/\d+/)[0],
+        });
         getClients();
         return {
             clients,
