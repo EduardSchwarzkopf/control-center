@@ -6,6 +6,7 @@
                     <router-link
                         class="btn btn-primary"
                         :to="{ name: 'clients.create' }"
+                        @click="setClientId(null)"
                         >Add client</router-link
                     >
                 </div>
