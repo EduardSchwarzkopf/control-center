@@ -21,6 +21,8 @@ export default function useClients() {
 
     const destroyClient = async (id) => {
         await axios.delete(`/api/clients/${id}`);
+        await router.push({ name: "clients.index" });
+        window.location.reload();
     };
 
     const storeClient = async (data) => {
@@ -42,6 +44,7 @@ export default function useClients() {
         try {
             await axios.patch(`/api/clients/${id}`, client.value);
             await router.push({ name: "clients.index" });
+            window.location.reload();
         } catch (e) {
             if (e.response.status === 422) {
                 for (const key in e.response.data.errors) {
