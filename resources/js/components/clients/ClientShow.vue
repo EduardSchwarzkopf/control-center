@@ -37,22 +37,31 @@
             <h4>Status</h4>
             <div class="grid grid-cols-3 gap-12">
                 <div class="flex justify-end space-x-1 col-span-2">
-                    <div class="" v-for="status in statusList" :key="status">
+                    <div
+                        class=""
+                        v-for="heartbeat in heartbeats"
+                        :key="heartbeat"
+                    >
                         <div
                             class="py-3 px-1 rounded"
-                            :class="status ? 'bg-success' : 'bg-error'"
+                            :class="
+                                heartbeat.status ? 'bg-success' : 'bg-error'
+                            "
                         ></div>
                     </div>
                 </div>
-                <div>
+                <div v-if="lastHeartbeat">
                     <div
                         :class="
                             'badge badge-lg text-white bg-' +
-                            (status ? 'success' : 'error')
+                            (lastHeartbeat.status ? 'success' : 'error')
                         "
                     >
-                        {{ status ? "Up" : "Down" }}
+                        {{ lastHeartbeat.status ? "Up" : "Down" }}
                     </div>
+                </div>
+                <div v-else>
+                    <div class="badge">laoding...</div>
                 </div>
                 <small v-if="client.options"
                     >Check every:
@@ -118,6 +127,7 @@
 <script>
 import useClients from "../../composables/clients";
 import useEnvironments from "../../composables/environments";
+import useHeartbeats from "../../composables/heartbeats";
 import { ref } from "vue";
 import { Chart, Grid, Line, Marker } from "vue3-charts";
 
@@ -129,8 +139,15 @@ export default {
     },
     components: { Chart, Grid, Line, Marker },
 
+    computed: {
+        lastHeartbeat() {
+            return this.heartbeats.slice(-1)[0];
+        },
+    },
+
     setup(props) {
         const { environments, getEnvironments } = useEnvironments();
+        const { heartbeats, getHeartbeats } = useHeartbeats();
         getEnvironments();
 
         const { client, getClient } = useClients();
@@ -139,6 +156,7 @@ export default {
                 ? window.location.pathname.match(/\d+/)[0]
                 : props.id;
         getClient(clientId);
+        getHeartbeats(clientId, "status", 30);
 
         const data = [
             { name: "Jan", pl: 1000, avg: 500, inc: 300 },
@@ -149,6 +167,7 @@ export default {
             { name: "Jun", pl: 600, avg: 400, inc: 300 },
             { name: "Jul", pl: 500, avg: 90, inc: 100 },
         ];
+
         const direction = ref("horizontal");
         const margin = ref({
             left: 0,
@@ -168,16 +187,12 @@ export default {
             },
         });
 
-        const statusList = [true, false, true, false];
-        const status = statusList[statusList.length - 1];
-
         return {
-            status,
+            heartbeats,
             data,
             margin,
             axis,
             direction,
-            statusList,
             environments,
             client,
         };
