@@ -318,7 +318,7 @@ import { onMounted, reactive } from "vue";
 export default {
     props: {
         id: {
-            type: String,
+            type: [String, Number],
         },
     },
 
@@ -376,16 +376,14 @@ export default {
             const { client, updateClient, getClient } = useClients();
             form = client;
 
-            onMounted(async () => {
-                getEnvironments();
-                getClient(props.id);
-            });
+            getEnvironments();
+            getClient(props.id);
 
             saveClient = async () => {
                 await updateClient(props.id);
             };
         } else {
-            onMounted(() => getEnvironments());
+            getEnvironments();
         }
 
         return {
