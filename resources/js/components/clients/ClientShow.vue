@@ -3,7 +3,12 @@
         <div class="mb-2">
             <div class="grid grid-cols-3 gap-2">
                 <div class="col-span-2 space-x-3">
-                    <h3 class="text-2xl mb-2">{{ client.name }}</h3>
+                    <h3 class="text-2xl mb-2">
+                        {{ client.name }}
+                        <span v-if="client.is_active == false" class="badge"
+                            >Paused</span
+                        >
+                    </h3>
                 </div>
                 <div class="text-right">
                     <router-link
