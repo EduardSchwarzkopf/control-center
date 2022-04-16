@@ -9,9 +9,8 @@
                         >Add client</router-link
                     >
                 </div>
-                <div class="space-y-6">
+                <div class="space-y-2">
                     <div
-                        class="w-full hover:bg-gray-100"
                         :class="
                             state.cliendId == item.id ? 'bg-primary-100' : ''
                         "
@@ -24,11 +23,13 @@
                                 params: { id: item.id },
                             }"
                             @click="setClientId(item.id)"
-                            :class="` rounded px-2 py-4 mb-4 w-full ${
-                                item.is_active ? 'opacity-50' : ''
-                            }`"
                         >
-                            {{ item.name }}
+                            <div
+                                class="w-full hover:bg-gray-100 rounded px-2 py-4"
+                                :class="`${item.is_active ? 'opacity-50' : ''}`"
+                            >
+                                {{ item.name }}
+                            </div>
                         </router-link>
                     </div>
                 </div>
