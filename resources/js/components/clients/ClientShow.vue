@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="client">
         <div class="mb-2">
             <div class="grid grid-cols-3 gap-2">
                 <div class="col-span-2 space-x-3">
@@ -104,6 +104,15 @@
             </div>
         </div>
     </div>
+    <div v-else>
+        <div
+            class="flex flex-row min-h-screen justify-center items-center text-center"
+        >
+            <div class="flex justify-center items-center">
+                <button class="btn btn-square loading"></button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -122,10 +131,14 @@ export default {
 
     setup(props) {
         const { environments, getEnvironments } = useEnvironments();
+        getEnvironments();
 
         const { client, getClient } = useClients();
-        getEnvironments();
-        getClient(props.id);
+        const clientId =
+            props.id == null
+                ? window.location.pathname.match(/\d+/)[0]
+                : props.id;
+        getClient(clientId);
 
         const data = [
             { name: "Jan", pl: 1000, avg: 500, inc: 300 },
