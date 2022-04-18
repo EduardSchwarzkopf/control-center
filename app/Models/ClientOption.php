@@ -9,7 +9,6 @@ class ClientOption extends Model
 {
     use HasFactory;
 
-    // DOKU: Backup interval für Database und Files in eigene Logik
     protected $fillable = [
         'client_id',
         'check_interval',
