@@ -97,12 +97,12 @@ class BackupCron extends ClientCron
 
         $backupCount = count($backupTypeList);
 
-        if ($amount > $backupCount) {
+        if ($amount > $backupCount || $backupCount == 0) {
             // Not enough backups, abort
             return;
         }
 
-        $toRemove = $backupCount - $amount + 1;
+        $toRemove = $backupCount - ($amount + 1);
         for ($i = 0; $i < $toRemove; $i++) {
             $backupFile = $backupTypeList[$i];
 
@@ -149,6 +149,7 @@ class BackupCron extends ClientCron
         $heartbeat = Heartbeat::where([['client_id', "=", $client->id], ['type', '=', $this->heartbeatType]])->first();
         $this->clientBackupUrl = $this->clientApiUrl . '/backups';
 
+        $heartbeat = null;
         if ($heartbeat) {
 
             $dbtimestamp = strtotime($heartbeat->created_at);
