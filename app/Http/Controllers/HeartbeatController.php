@@ -33,6 +33,6 @@ class HeartbeatController extends Controller
             $amount = $maxAmount;
         }
 
-        return Heartbeat::where([['client_id', "=", $clientId], ['type', '=', $type]])->latest()->take($amount)->get();
+        return Heartbeat::where([['client_id', "=", $clientId], ['type', '=', $type]])->orderBy('created_at', 'asc')->latest()->take($amount)->get();
     }
 }
