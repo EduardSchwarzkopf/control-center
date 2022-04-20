@@ -162,6 +162,12 @@ class HeartbeatCron extends ClientCron
 
         $url = $apiBackupUrl . '/' . $filename;
         $response = $this->clientRequest->get($url, []);
+
+        if ($response == null) {
+            Log::error('No Backup found on Client ' . $this->clientName);
+            return;
+        }
+
         $file = $response->getBody()->getContents();
 
         $isSaved = $storage->put($clientBackupPath, $file);
