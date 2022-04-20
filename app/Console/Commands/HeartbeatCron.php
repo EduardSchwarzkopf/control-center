@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Heartbeat;
+use Carbon\Carbon;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -190,7 +191,8 @@ class HeartbeatCron extends ClientCron
         if ($heartbeat) {
 
             $dbtimestamp = strtotime($heartbeat->created_at);
-            if (time() - $dbtimestamp < $clientOptions->check_interval) {
+            $timePast = Carbon::now()->timestamp - $dbtimestamp;
+            if ($timePast < $clientOptions->check_interval) {
                 return;
             }
         }
