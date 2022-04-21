@@ -138,6 +138,7 @@
                                     v-model="
                                         form.options.backup_database_enabled
                                     "
+                                    @click="updateFieldState(form, $event)"
                                 />
                             </div>
                         </div>
@@ -153,6 +154,10 @@
                                         name="backup_database_max_age"
                                         id="backup_database_max_age"
                                         class="input input-bordered w-full"
+                                        :disabled="
+                                            !form.options
+                                                .backup_database_enabled
+                                        "
                                         v-model="
                                             form.options.backup_database_max_age
                                         "
@@ -172,6 +177,9 @@
                                     name="backup_database_amount"
                                     id="backup_database_amount"
                                     class="input input-bordered"
+                                    :disabled="
+                                        !form.options.backup_database_enabled
+                                    "
                                     v-model="
                                         form.options.backup_database_amount
                                     "
@@ -189,6 +197,9 @@
                                     name="backup_database_amount_remote"
                                     id="backup_database_amount_remote"
                                     class="input input-bordered w-full"
+                                    :disabled="
+                                        !form.options.backup_database_enabled
+                                    "
                                     v-model="
                                         form.options
                                             .backup_database_amount_remote
@@ -208,6 +219,7 @@
                                     id="backup_files_enabled"
                                     class="toggle toggle-primary"
                                     v-model="form.options.backup_files_enabled"
+                                    @click="updateFieldState(form, $event)"
                                 />
                             </div>
                         </div>
@@ -223,6 +235,9 @@
                                         name="backup_files_max_age"
                                         id="backup_files_max_age"
                                         class="input input-bordered w-full"
+                                        :disabled="
+                                            !form.options.backup_files_enabled
+                                        "
                                         v-model="
                                             form.options.backup_files_max_age
                                         "
@@ -242,6 +257,9 @@
                                     name="backup_files_amount"
                                     id="backup_files_amount"
                                     class="input input-bordered w-full"
+                                    :disabled="
+                                        !form.options.backup_files_enabled
+                                    "
                                     v-model="form.options.backup_files_amount"
                                 />
                             </div>
@@ -257,6 +275,9 @@
                                     name="backup_files_amount_remote"
                                     id="backup_files_amount_remote"
                                     class="input input-bordered w-full"
+                                    :disabled="
+                                        !form.options.backup_files_enabled
+                                    "
                                     v-model="
                                         form.options.backup_files_amount_remote
                                     "
@@ -321,6 +342,12 @@ export default {
             type: [String, Number],
         },
     },
+    methods: {
+        updateFieldState(form, event) {
+            const target = event.target;
+            form.options[target.id] = !form.options[target.id];
+        },
+    },
 
     setup(props) {
         let form = reactive({
@@ -332,17 +359,22 @@ export default {
             options: {
                 check_interval: 0,
                 backup_interval: 0,
-                backup_database_enabled: 0,
+                backup_database_enabled: false,
                 backup_database_max_age: 0,
                 backup_database_amount: 0,
                 backup_database_amount_remote: 0,
-                backup_files_enabled: 0,
+                backup_files_enabled: false,
                 backup_files_max_age: 0,
                 backup_files_amount: 0,
                 backup_files_amount_remote: 0,
                 diskspace_threshold: 0,
                 inodes_threshold: 0,
             },
+        });
+
+        const state = reactive({
+            backup_database_enabled: form.options.backup_database_enabled,
+            backup_files_enabled: form.options.backup_files_enabled,
         });
 
         const status_code_list = {
@@ -387,6 +419,7 @@ export default {
         }
 
         return {
+            state,
             errors,
             status_code_list,
             environments,
