@@ -63,7 +63,11 @@ class BackupCron extends ClientCron
             ]
         );
 
-        $status_code = $response->getStatusCode();
+        $status_code = 404;
+        if ($response) {
+            $status_code = $response->getStatusCode();
+        }
+
 
         $this->CreateHeartbeat($this->heartbeatType, $status_code == 201, '', $type);
     }
