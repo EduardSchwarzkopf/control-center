@@ -28,6 +28,10 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
+        $request->merge([
+            'url' => rtrim($request->url, "/"),
+        ]);
+
         $client = Client::create($request->all());
 
 
@@ -63,6 +67,10 @@ class ClientController extends Controller
      */
     public function update(StoreClientRequest $request, Client $client)
     {
+
+        $request->merge([
+            'url' => rtrim($request->url, "/"),
+        ]);
 
         $client->update($request->all());
 
